@@ -1,0 +1,73 @@
+<style>
+    .register-page {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0;
+        padding: 20px;
+    }
+    .register-page .navbar {
+        display: none !important;
+    }
+    .register-page footer {
+        display: none !important;
+    }
+    .register-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        width: 100%;
+        max-width: 500px;
+    }
+</style>
+
+<div class="register-page">
+    <div class="register-card">
+        <div class="text-center mb-4">
+            <h2 class="fw-bold text-primary">Create Account</h2>
+            <p class="text-muted">Join us today</p>
+        </div>
+        
+        <form id="registerForm">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="firstName" class="form-label">First Name</label>
+                    <input type="text" class="form-control" id="firstName" name="firstName" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="lastName" class="form-label">Last Name</label>
+                    <input type="text" class="form-control" id="lastName" name="lastName" required>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email Address</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+            <div class="mb-3">
+                <label for="phone" class="form-label">Phone Number</label>
+                <input type="tel" class="form-control" id="phone" name="phone" required>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" name="password" required>
+            </div>
+            <div class="mb-3">
+                <label for="confirmPassword" class="form-label">Confirm Password</label>
+                <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+            </div>
+            <div class="d-grid mb-3">
+                <button type="submit" class="btn btn-success btn-lg">Create Account</button>
+            </div>
+        </form>
+        
+        <div class="text-center">
+            <p class="mb-0">Already have an account?</p>
+            <button type="button" class="btn btn-outline-primary mt-2" onclick="window.location.hash = '#login'">
+                Sign In
+            </button>
+        </div>
+    </div>
+</div>
