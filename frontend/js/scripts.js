@@ -22,7 +22,7 @@ function toggleNavigation(show) {
 function checkCurrentPage() {
     const currentHash = window.location.hash;
     
-    if (currentHash === '#login' || currentHash === '#register') {
+    if (currentHash === '#login' || currentHash === '#register' || currentHash === '#order-success') {
         toggleNavigation(false);
     } else {
         toggleNavigation(true);

@@ -1,0 +1,268 @@
+<style>
+    .success-page {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 0;
+    }
+    
+    .success-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        padding: 3rem;
+        text-align: center;
+        max-width: 600px;
+        width: 100%;
+        margin: 0 1rem;
+    }
+    
+    .success-icon {
+        width: 100px;
+        height: 100px;
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 2rem;
+        animation: bounceIn 0.8s ease-out;
+    }
+    
+    .success-icon i {
+        font-size: 3rem;
+        color: white;
+    }
+    
+    @keyframes bounceIn {
+        0% {
+            transform: scale(0.3);
+            opacity: 0;
+        }
+        50% {
+            transform: scale(1.05);
+        }
+        70% {
+            transform: scale(0.9);
+        }
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+    
+    .order-details {
+        background-color: #f8f9fa;
+        border-radius: 15px;
+        padding: 2rem;
+        margin: 2rem 0;
+        text-align: left;
+    }
+    
+    .detail-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #e9ecef;
+    }
+    
+    .detail-row:last-child {
+        border-bottom: none;
+        font-weight: 600;
+        font-size: 1.1rem;
+        color: #0d6efd;
+    }
+    
+    .btn-primary-custom {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        padding: 1rem 2rem;
+        border-radius: 25px;
+        color: white;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-block;
+        margin: 0.5rem;
+        transition: transform 0.3s ease;
+    }
+    
+    .btn-primary-custom:hover {
+        transform: translateY(-2px);
+        color: white;
+        text-decoration: none;
+    }
+    
+    .btn-outline-custom {
+        border: 2px solid #0d6efd;
+        color: #0d6efd;
+        background: transparent;
+        padding: 1rem 2rem;
+        border-radius: 25px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-block;
+        margin: 0.5rem;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-outline-custom:hover {
+        background-color: #0d6efd;
+        color: white;
+        text-decoration: none;
+    }
+    
+    .tracking-info {
+        background-color: #e3f2fd;
+        border-left: 4px solid #2196f3;
+        padding: 1rem;
+        margin: 1.5rem 0;
+        border-radius: 0 8px 8px 0;
+    }
+    
+    .estimated-delivery {
+        background-color: #f3e5f5;
+        border-left: 4px solid #9c27b0;
+        padding: 1rem;
+        margin: 1.5rem 0;
+        border-radius: 0 8px 8px 0;
+    }
+    
+    .pulse {
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.05);
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
+</style>
+
+<div class="success-page">
+    <div class="success-card">
+        <div class="success-icon pulse">
+            <i class="bi-check-lg"></i>
+        </div>
+        
+        <h1 class="display-4 fw-bold text-primary mb-3">Order Successful!</h1>
+        <p class="lead text-muted mb-4">
+            Thank you for your purchase! Your order has been confirmed and will be processed shortly.
+        </p>
+        
+        <!-- Order Details -->
+        <div class="order-details">
+            <h5 class="mb-3">
+                <i class="bi-receipt me-2"></i>
+                Order Details
+            </h5>
+            
+            <div class="detail-row">
+                <span>Order Number:</span>
+                <strong>#ORD-2024-001</strong>
+            </div>
+            
+            <div class="detail-row">
+                <span>Order Date:</span>
+                <span id="orderDate"></span>
+            </div>
+            
+            <div class="detail-row">
+                <span>Total Amount:</span>
+                <span>$138.60</span>
+            </div>
+            
+            <div class="detail-row">
+                <span>Payment Method:</span>
+                <span>Credit Card ending in 1234</span>
+            </div>
+            
+            <div class="detail-row">
+                <span>Shipping Address:</span>
+                <span>Trg BiH 15, Sarajevo, 71000</span>
+            </div>
+        </div>
+        
+        <!-- Tracking Information -->
+        <div class="tracking-info">
+            <h6 class="mb-2">
+                <i class="bi-truck me-2"></i>
+                Tracking Information
+            </h6>
+            <p class="mb-0">
+                Your order is being prepared for shipment. You'll receive a tracking number via email once it ships.
+            </p>
+        </div>
+        
+        <!-- Estimated Delivery -->
+        <div class="estimated-delivery">
+            <h6 class="mb-2">
+                <i class="bi-calendar-check me-2"></i>
+                Estimated Delivery
+            </h6>
+            <p class="mb-0">
+                <strong>3-5 business days</strong> (Standard Shipping)
+            </p>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="mt-4">
+            <a href="#profile" class="btn-primary-custom">
+                <i class="bi-person me-2"></i>
+                View Order History
+            </a>
+            <a href="#home" class="btn-outline-custom">
+                <i class="bi-house me-2"></i>
+                Continue Shopping
+            </a>
+        </div>
+        
+        <!-- Additional Information -->
+        <div class="mt-4 pt-3 border-top">
+            <p class="text-muted mb-2">
+                <i class="bi-envelope me-2"></i>
+                A confirmation email has been sent to your registered email address.
+            </p>
+            <p class="text-muted mb-0">
+                <i class="bi-headset me-2"></i>
+                Need help? <a href="#" class="text-primary">Contact our support team</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+// Set current date
+document.addEventListener('DOMContentLoaded', function() {
+    const now = new Date();
+    const options = { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    };
+    document.getElementById('orderDate').textContent = now.toLocaleDateString('en-US', options);
+    
+    // Auto-redirect to home after 30 seconds (optional)
+    // setTimeout(() => {
+    //     window.location.hash = '#home';
+    // }, 30000);
+});
+
+// Add some interactive effects
+document.querySelector('.success-icon').addEventListener('click', function() {
+    this.style.transform = 'scale(1.2)';
+    setTimeout(() => {
+        this.style.transform = 'scale(1)';
+    }, 200);
+});
+</script>
