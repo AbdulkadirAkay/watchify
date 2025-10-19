@@ -31,11 +31,61 @@ function checkCurrentPage() {
 
 // Listen for hash changes
 $(window).on('hashchange', function() {
+    // Handle empty hash or just "#" to show home page
+    const currentHash = window.location.hash;
+    if (!currentHash || currentHash === '#') {
+        window.location.hash = '#home';
+        return;
+    }
+    
+    // Handle category-products and brand-products with query parameters
+    if (currentHash.includes('category-products?id=') || currentHash.includes('brand-products?id=')) {
+        // Store the full hash with parameters BEFORE redirecting
+        // Always update the stored params for the current page type
+        window.currentHashWithParams = currentHash;
+        
+        // Extract the base route and redirect to it
+        const baseRoute = currentHash.split('?')[0];
+        window.location.hash = baseRoute;
+        return;
+    }
+    
+    // Store the full hash with parameters for pages that need it
+    // Only store if we don't already have parameters stored (to avoid overwriting)
+    if (!window.currentHashWithParams || !window.currentHashWithParams.includes('?')) {
+        window.currentHashWithParams = currentHash;
+    }
+    
     checkCurrentPage();
 });
 
 // Check on initial load
 $(document).ready(function() {
+    // Handle empty hash or just "#" to show home page
+    const currentHash = window.location.hash;
+    if (!currentHash || currentHash === '#') {
+        window.location.hash = '#home';
+        return;
+    }
+    
+    // Handle category-products and brand-products with query parameters on initial load
+    if (currentHash.includes('category-products?id=') || currentHash.includes('brand-products?id=')) {
+        // Store the full hash with parameters BEFORE redirecting
+        // Always update the stored params for the current page type
+        window.currentHashWithParams = currentHash;
+        
+        // Extract the base route and redirect to it
+        const baseRoute = currentHash.split('?')[0];
+        window.location.hash = baseRoute;
+        return;
+    }
+    
+    // Store the full hash with parameters
+    // Only store if we don't already have parameters stored (to avoid overwriting)
+    if (!window.currentHashWithParams || !window.currentHashWithParams.includes('?')) {
+        window.currentHashWithParams = currentHash;
+    }
+    
     checkCurrentPage();
 });
 
@@ -53,7 +103,6 @@ $(document).on('submit', '#loginForm', function(e) {
     }
     
     // Here you would typically send the data to your backend
-    console.log('Login attempt:', { email, password });
     
     
     window.location.hash = '#home';
@@ -85,7 +134,6 @@ $(document).on('submit', '#registerForm', function(e) {
     }
     
     // Here you would typically send the data to your backend
-    console.log('Registration attempt:', { firstName, lastName, email, phone, password });
     
     // For demo purposes, show success message and redirect to login
     alert('Registration successful! Please login with your credentials.');

@@ -1,0 +1,446 @@
+<style>
+    .category-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 3rem 0;
+        margin-bottom: 2rem;
+    }
+    
+    .category-breadcrumb {
+        background-color: #f8f9fa;
+        padding: 1rem 0;
+        border-bottom: 1px solid #e9ecef;
+    }
+    
+    .breadcrumb {
+        margin-bottom: 0;
+    }
+    
+    .breadcrumb-item + .breadcrumb-item::before {
+        content: ">";
+    }
+    
+    .products-grid {
+        padding: 2rem 0;
+    }
+    
+    .product-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: none;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+    
+    .product-image {
+        height: 250px;
+        object-fit: cover;
+        border-radius: 8px 8px 0 0;
+    }
+    
+    .sale-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        z-index: 2;
+    }
+    
+    .price-original {
+        text-decoration: line-through;
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+    
+    .price-sale {
+        color: #dc3545;
+        font-weight: 600;
+    }
+    
+    .btn-add-cart {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
+        font-weight: 500;
+        transition: transform 0.3s ease;
+    }
+    
+    .btn-add-cart:hover {
+        transform: translateY(-2px);
+        color: white;
+    }
+    
+    
+    .filter-section {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .loading-spinner {
+        display: none;
+        text-align: center;
+        padding: 3rem;
+    }
+    
+    .no-products {
+        text-align: center;
+        padding: 3rem;
+        color: #6c757d;
+    }
+</style>
+
+<!-- Category Header -->
+<div class="category-header">
+    <div class="container">
+        <div class="text-center">
+            <h1 class="display-4 fw-bold mb-3" id="categoryTitle">Loading Category...</h1>
+            <p class="lead mb-0" id="categoryDescription">Discover our amazing collection</p>
+        </div>
+    </div>
+</div>
+
+<!-- Breadcrumb -->
+<div class="category-breadcrumb">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#home" class="text-decoration-none">Home</a></li>
+                <li class="breadcrumb-item"><a href="#" class="text-decoration-none" id="breadcrumbCategory">Categories</a></li>
+                <li class="breadcrumb-item active" aria-current="page" id="breadcrumbCurrent">Products</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="container">
+    
+    <!-- Loading Spinner -->
+    <div class="loading-spinner" id="loadingSpinner">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-3">Loading products...</p>
+    </div>
+    
+    <!-- Products Grid -->
+    <div class="products-grid" id="productsGrid">
+        <div class="row gx-4 gx-lg-5 row-cols-1 row-cols-md-2 row-cols-xl-4" id="productsContainer">
+            <!-- Products will be loaded here -->
+        </div>
+    </div>
+    
+    <!-- No Products Message -->
+    <div class="no-products" id="noProducts" style="display: none;">
+        <i class="bi-box display-1 text-muted"></i>
+        <h4 class="mt-3">No products found</h4>
+        <p class="text-muted">We couldn't find any products in this category.</p>
+        <a href="#home" class="btn btn-primary">Continue Shopping</a>
+    </div>
+</div>
+
+<script>
+// Sample products data (in a real app, this would come from an API)
+const productsData = [
+    {
+        id: 1,
+        name: "Fancy Product",
+        price: 80.00,
+        originalPrice: null,
+        image: "images/rolex.png",
+        category: "men",
+        brand: "Rolex",
+        onSale: false
+    },
+    {
+        id: 2,
+        name: "Special Item",
+        price: 18.00,
+        originalPrice: 20.00,
+        image: "images/rolex.png",
+        category: "women",
+        brand: "Police",
+        onSale: true
+    },
+    {
+        id: 3,
+        name: "Sale Item",
+        price: 25.00,
+        originalPrice: 50.00,
+        image: "images/rolex.png",
+        category: "men",
+        brand: "Fossil",
+        onSale: true
+    },
+    {
+        id: 4,
+        name: "Popular Item",
+        price: 40.00,
+        originalPrice: null,
+        image: "images/rolex.png",
+        category: "women",
+        brand: "Festina",
+        onSale: false
+    }
+];
+
+// Category mapping by ID (you can map these to your database)
+const categoryMap = {
+    '1': {
+        title: 'Men\'s Watches',
+        description: 'Discover our collection of premium men\'s watches',
+        breadcrumb: 'Men\'s Collection'
+    },
+    '2': {
+        title: 'Women\'s Watches',
+        description: 'Elegant and stylish watches for women',
+        breadcrumb: 'Women\'s Collection'
+    },
+    '3': {
+        title: 'Kids\' Watches',
+        description: 'Fun and colorful watches for children',
+        breadcrumb: 'Kids\' Collection'
+    },
+    '4': {
+        title: 'Police Watches',
+        description: 'Bold and distinctive Police watch collection',
+        breadcrumb: 'Police Brand'
+    },
+    '5': {
+        title: 'Rolex Watches',
+        description: 'Luxury timepieces from the world\'s most prestigious brand',
+        breadcrumb: 'Rolex Brand'
+    },
+    '6': {
+        title: 'Fossil Watches',
+        description: 'Modern and trendy Fossil watch collection',
+        breadcrumb: 'Fossil Brand'
+    },
+    '7': {
+        title: 'Festina Watches',
+        description: 'Quality timepieces with European style',
+        breadcrumb: 'Festina Brand'
+    },
+    '8': {
+        title: 'Patek Philippe Watches',
+        description: 'Exclusive luxury watches from Patek Philippe',
+        breadcrumb: 'Patek Philippe Brand'
+    }
+};
+
+// Get category ID from URL hash query parameters
+function getCategoryId() {
+    // Use the hash with parameters that was stored
+    const hash = window.currentHashWithParams || window.location.hash;
+    let categoryId = '1'; // default to ID 1
+    
+    if (hash && hash.includes('?')) {
+        const hashParts = hash.split('?');
+        if (hashParts.length > 1) {
+            const queryString = hashParts[1];
+            const urlParams = new URLSearchParams(queryString);
+            categoryId = urlParams.get('id') || '1';
+        }
+    }
+    
+    return categoryId;
+}
+
+// Load products based on category ID
+function loadProducts() {
+    const categoryId = getCategoryId();
+    
+    // Show loading spinner
+    $('#loadingSpinner').show();
+    $('#productsGrid').hide();
+    $('#noProducts').hide();
+    
+    // Simulate API call delay
+    setTimeout(() => {
+        // Get category info
+        const categoryInfo = categoryMap[categoryId] || categoryMap['1'];
+        
+        // Update page title and info
+        $('#categoryTitle').text(categoryInfo.title);
+        $('#categoryDescription').text(categoryInfo.description);
+        $('#breadcrumbCategory').text(categoryInfo.breadcrumb);
+        $('#breadcrumbCurrent').text(categoryInfo.title);
+        
+        // Filter products by category ID (in a real app, this would be done by the API)
+        // For demo purposes, we'll show different products based on category ID
+        let filteredProducts = [];
+        
+        switch(categoryId) {
+            case '1': // Men's watches
+                filteredProducts = productsData.filter(product => product.category === 'men');
+                break;
+            case '2': // Women's watches
+                filteredProducts = productsData.filter(product => product.category === 'women');
+                break;
+            case '3': // Kids' watches
+                filteredProducts = productsData.filter(product => product.category === 'kids');
+                break;
+            case '4': // Police brand
+                filteredProducts = productsData.filter(product => product.brand === 'Police');
+                break;
+            case '5': // Rolex brand
+                filteredProducts = productsData.filter(product => product.brand === 'Rolex');
+                break;
+            case '6': // Fossil brand
+                filteredProducts = productsData.filter(product => product.brand === 'Fossil');
+                break;
+            case '7': // Festina brand
+                filteredProducts = productsData.filter(product => product.brand === 'Festina');
+                break;
+            case '8': // Patek Philippe brand
+                filteredProducts = productsData.filter(product => product.brand === 'Patek Philippe');
+                break;
+            default:
+                filteredProducts = productsData.slice(0, 4); // Show first 4 products as fallback
+        }
+        
+        // If no products found, show all products as fallback
+        const productsToShow = filteredProducts.length > 0 ? filteredProducts : productsData.slice(0, 4);
+        
+        // Render products
+        renderProducts(productsToShow);
+        
+        // Hide loading spinner
+        $('#loadingSpinner').hide();
+        
+        if (productsToShow.length > 0) {
+            $('#productsGrid').show();
+        } else {
+            $('#noProducts').show();
+        }
+        
+        // Add query parameter virtually to URL after items are loaded
+        addQueryParameterToURL(categoryId);
+    }, 100);
+}
+
+// Render products
+function renderProducts(products) {
+    const container = $('#productsContainer');
+    container.empty();
+    
+    products.forEach(product => {
+        const productCard = createProductCard(product);
+        container.append(productCard);
+    });
+}
+
+// Create product card HTML
+function createProductCard(product) {
+    const saleBadge = product.onSale ? 
+        '<div class="sale-badge">Sale</div>' : '';
+    
+    const priceHtml = product.originalPrice ? 
+        `<span class="price-original">$${product.originalPrice.toFixed(2)}</span>
+         <span class="price-sale">$${product.price.toFixed(2)}</span>` :
+        `<span class="fw-bold">$${product.price.toFixed(2)}</span>`;
+    
+    return `
+        <div class="col mb-5">
+            <div class="card h-100 product-card position-relative">
+                ${saleBadge}
+                <img class="card-img-top product-image" src="${product.image}" alt="${product.name}" />
+                <div class="card-body p-4">
+                    <div class="text-center">
+                        <h5 class="fw-bolder">${product.name}</h5>
+                        <p class="text-muted mb-2">${product.brand}</p>
+                        <div class="mb-3">
+                            ${priceHtml}
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                    <div class="text-center">
+                        <button class="btn btn-add-cart w-100" onclick="addToCart(${product.id})">
+                            <i class="bi-cart-plus me-2"></i>
+                            Add to Cart
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// Add query parameter virtually to URL
+function addQueryParameterToURL(categoryId) {
+    // Only add if we don't already have the parameter in the URL
+    const currentHash = window.location.hash;
+    const expectedHash = `#category-products?id=${categoryId}`;
+    
+    if (currentHash !== expectedHash) {
+        // Use history.replaceState to update URL without triggering navigation
+        const newURL = window.location.pathname + expectedHash;
+        window.history.replaceState(null, '', newURL);
+        
+        // Update the stored hash with parameters
+        window.currentHashWithParams = expectedHash;
+    }
+}
+
+// Add to cart function
+function addToCart(productId) {
+    // Here you would typically add the product to cart
+    console.log('Adding product to cart:', productId);
+    
+    // Show success message
+    const btn = event.target.closest('button');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="bi-check me-2"></i>Added!';
+    btn.classList.add('btn-success');
+    btn.classList.remove('btn-add-cart');
+    
+    setTimeout(() => {
+        btn.innerHTML = originalText;
+        btn.classList.remove('btn-success');
+        btn.classList.add('btn-add-cart');
+    }, 2000);
+}
+
+
+// Initialize page
+$(document).ready(function() {
+    // Clear any old parameters from other pages and ensure we have the right ones
+    if (window.currentHashWithParams && !window.currentHashWithParams.includes('category-products')) {
+        window.currentHashWithParams = null;
+    }
+    
+    // Check if we need to wait for parameters to be stored
+    if (!window.currentHashWithParams && window.location.hash === '#category-products') {
+        // Wait a bit longer for the hash change handler to store the params
+        setTimeout(function() {
+            loadProducts();
+        }, 200);
+    } else {
+        // Small delay to ensure everything is loaded
+        setTimeout(function() {
+            loadProducts();
+        }, 100);
+    }
+});
+
+// Listen for hash changes to reload products
+$(window).on('hashchange', function() {
+    const hash = window.location.hash;
+    if (hash.startsWith('#category-products')) {
+        loadProducts();
+    }
+});
+</script>
