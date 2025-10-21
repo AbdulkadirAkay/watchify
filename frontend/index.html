@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Watchify</title>
+        <!-- Favicon-->
+        <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+        <!-- Bootstrap icons-->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet" />
+        <link rel="stylesheet" href="./css/spapp.css">
+    </head>
+    <body>
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container px-4 px-lg-5">
+                <a class="navbar-brand" href="#home">Watchify</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+                        <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" id="categoriesDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Categories</a>
+                            <ul class="dropdown-menu" aria-labelledby="categoriesDropdown">
+                                <li><a class="dropdown-item" href="#category-products?id=1">Men</a></li>
+                                <li><a class="dropdown-item" href="#category-products?id=2">Women</a></li>
+                                <li><a class="dropdown-item" href="#category-products?id=3">Kids</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" id="brandsDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Brands</a>
+                            <ul class="dropdown-menu" aria-labelledby="brandsDropdown">
+                                <li><a class="dropdown-item" href="#brand-products?id=1">Police</a></li>
+                                <li><a class="dropdown-item" href="#brand-products?id=2">Rolex</a></li>
+                                <li><a class="dropdown-item" href="#brand-products?id=3">Fossil</a></li>
+                                <li><a class="dropdown-item" href="#brand-products?id=4">Festina</a></li>
+                                <li><a class="dropdown-item" href="#brand-products?id=5">Patek Philippe</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" id="shopDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Shop</a>
+                            <ul class="dropdown-menu" aria-labelledby="shopDropdown">
+                                <li><a class="dropdown-item" href="#all-products">All Products</a></li>
+                                <li><hr class="dropdown-divider" /></li>
+                                <li><a class="dropdown-item" href="#popular-items">Popular Items</a></li>
+                                <li><a class="dropdown-item" href="#new-arrivals">New Arrivals</a></li>
+                            </ul>
+                        </li>
+                        
+                    </ul>
+                    <form class="d-flex">
+                        <button class="btn btn-outline-primary me-2" type="button" onclick="window.location.hash = '#login'">
+                            <i class="bi-box-arrow-in-right me-1"></i>
+                            Login
+                        </button>
+                        <button class="btn btn-outline-secondary me-2" type="button" onclick="window.location.hash = '#profile'" id="profileBtn">
+                            <i class="bi-person-circle me-1"></i>
+                            Profile
+                        </button>
+                        <button class="btn btn-outline-warning me-2" type="button" onclick="window.location.hash = '#admin'" id="adminBtn">
+                            <i class="bi-gear me-1"></i>
+                            Admin
+                        </button>
+                        <button class="btn btn-outline-dark" type="button" onclick="window.location.hash = '#cart'">
+                            <i class="bi-cart-fill me-1"></i>
+                            Cart
+                            <span class="badge bg-dark text-white ms-1 rounded-pill">0</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </nav>
+        <!-- Section-->
+        <section>
+            <main id="spapp" role="main">
+                <section id="home" data-load="home.html"></section>
+                <section id="about" data-load="about.html"></section>
+                <section id="popular-items" data-load="popular-items.html"></section>
+                <section id="new-arrivals" data-load="new-arrivals.html"></section>
+                <section id="category-products" data-load="category-products.html"></section>
+                <section id="brand-products" data-load="brand-products.html"></section>
+                <section id="login" data-load="login.html"></section>
+                <section id="register" data-load="register.html"></section>
+                <section id="cart" data-load="cart.html"></section>
+                <section id="checkout" data-load="checkout.html"></section>
+                <section id="order-success" data-load="order-success.html"></section>
+                <section id="profile" data-load="profile.html"></section>
+                <section id="admin" data-load="admin.html"></section>
+            </main>
+        </section>
+        <!-- Footer-->
+        <footer class="py-5 bg-dark">
+            <div class="container"><p class="m-0 text-center text-white">Copyright &copy; Your Website 2023</p></div>
+        </footer>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="./js/jquery.min.js"></script>
+        <script src="./js/jquery.spapp.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+    </body>
+</html>

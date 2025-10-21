@@ -1,0 +1,408 @@
+<style>
+    .profile-page {
+        min-height: 100vh;
+        background-color: #f8f9fa;
+        padding: 2rem 0;
+    }
+    
+    .profile-sidebar {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        padding: 0;
+        height: fit-content;
+    }
+    
+    .profile-sidebar .nav-link {
+        color: #6c757d;
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid #e9ecef;
+        transition: all 0.3s ease;
+    }
+    
+    .profile-sidebar .nav-link:last-child {
+        border-bottom: none;
+    }
+    
+    .profile-sidebar .nav-link:hover,
+    .profile-sidebar .nav-link.active {
+        color: #0d6efd;
+        background-color: #f8f9ff;
+        border-left: 4px solid #0d6efd;
+    }
+    
+    .profile-content {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        min-height: 500px;
+    }
+    
+    .profile-section {
+        display: none;
+    }
+    
+    .profile-section.active {
+        display: block;
+    }
+    
+    .profile-header {
+        border-bottom: 1px solid #e9ecef;
+        padding-bottom: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .order-item {
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        transition: box-shadow 0.3s ease;
+    }
+    
+    .order-item:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    .order-status {
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+    
+    .status-pending {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+    
+    .status-shipped {
+        background-color: #d1ecf1;
+        color: #0c5460;
+    }
+    
+    .status-delivered {
+        background-color: #d4edda;
+        color: #155724;
+    }
+    
+    .form-floating {
+        margin-bottom: 1rem;
+    }
+    
+    .btn-save {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        padding: 0.75rem 2rem;
+        border-radius: 25px;
+        color: white;
+        font-weight: 500;
+        transition: transform 0.3s ease;
+    }
+    
+    .btn-save:hover {
+        transform: translateY(-2px);
+        color: white;
+    }
+</style>
+
+<div class="profile-page">
+    <div class="container">
+        <div class="row">
+            <!-- Profile Sidebar -->
+            <div class="col-lg-3 mb-4">
+                <div class="profile-sidebar">
+                    <div class="text-center p-3 border-bottom">
+                        <div class="mb-3">
+                            <i class="bi-person-circle display-1 text-primary"></i>
+                        </div>
+                        <h5 class="mb-1">John Doe</h5>
+                        <p class="text-muted mb-0">john.doe@example.com</p>
+                    </div>
+                    <nav class="nav flex-column">
+                        <a class="nav-link active" href="#" onclick="showProfileSection('userInfo')">
+                            <i class="bi-person me-2"></i>
+                            User Information
+                        </a>
+                        <a class="nav-link" href="#" onclick="showProfileSection('myOrders')">
+                            <i class="bi-bag me-2"></i>
+                            My Orders
+                        </a>
+                        <a class="nav-link" href="#" onclick="showProfileSection('changePassword')">
+                            <i class="bi-lock me-2"></i>
+                            Change Password
+                        </a>
+                        <hr class="my-2">
+                        <a class="nav-link text-danger" href="#" onclick="logout()">
+                            <i class="bi-box-arrow-right me-2"></i>
+                            Logout
+                        </a>
+                    </nav>
+                </div>
+            </div>
+            
+            <!-- Profile Content -->
+            <div class="col-lg-9">
+                <div class="profile-content">
+                    <!-- User Information Section -->
+                    <div id="userInfo" class="profile-section active">
+                        <div class="profile-header">
+                            <h4 class="mb-0">User Information</h4>
+                            <p class="text-muted">Manage your personal information and preferences</p>
+                        </div>
+                        
+                        <form id="userInfoForm">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control" id="firstName" value="John" required>
+                                        <label for="firstName">First Name</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control" id="lastName" value="Doe" required>
+                                        <label for="lastName">Last Name</label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-floating">
+                                <input type="email" class="form-control" id="email" value="john.doe@example.com" required>
+                                <label for="email">Email Address</label>
+                            </div>
+                            
+                            <div class="form-floating">
+                                <input type="tel" class="form-control" id="phone" value="+1 (555) 123-4567" required>
+                                <label for="phone">Phone Number</label>
+                            </div>
+                            
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="address" value="123 Main Street, City, State 12345" required>
+                                <label for="address">Address</label>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control" id="city" value="New York" required>
+                                        <label for="city">City</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control" id="zipCode" value="10001" required>
+                                        <label for="zipCode">ZIP Code</label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="text-end mt-4">
+                                <button type="submit" class="btn btn-save">
+                                    <i class="bi-check-lg me-2"></i>
+                                    Save Changes
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- My Orders Section -->
+                    <div id="myOrders" class="profile-section">
+                        <div class="profile-header">
+                            <h4 class="mb-0">My Orders</h4>
+                            <p class="text-muted">Track and manage your orders</p>
+                        </div>
+                        
+                        <div class="order-item">
+                            <div class="row align-items-center">
+                                <div class="col-md-2">
+                                    <img src="images/rolex.png" class="img-fluid rounded" alt="Product">
+                                </div>
+                                <div class="col-md-4">
+                                    <h6 class="mb-1">Rolex Submariner</h6>
+                                    <p class="text-muted mb-0">Order #ORD-001</p>
+                                    <small class="text-muted">Ordered on March 15, 2024</small>
+                                </div>
+                                <div class="col-md-2">
+                                    <span class="order-status status-delivered">Delivered</span>
+                                </div>
+                                <div class="col-md-2">
+                                    <h6 class="mb-0">$2,500.00</h6>
+                                </div>
+                                <div class="col-md-2">
+                                    <button class="btn btn-outline-primary btn-sm">View Details</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="order-item">
+                            <div class="row align-items-center">
+                                <div class="col-md-2">
+                                    <img src="images/rolex.png" class="img-fluid rounded" alt="Product">
+                                </div>
+                                <div class="col-md-4">
+                                    <h6 class="mb-1">Police Watch Classic</h6>
+                                    <p class="text-muted mb-0">Order #ORD-002</p>
+                                    <small class="text-muted">Ordered on March 20, 2024</small>
+                                </div>
+                                <div class="col-md-2">
+                                    <span class="order-status status-shipped">Shipped</span>
+                                </div>
+                                <div class="col-md-2">
+                                    <h6 class="mb-0">$180.00</h6>
+                                </div>
+                                <div class="col-md-2">
+                                    <button class="btn btn-outline-primary btn-sm">Track Order</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="order-item">
+                            <div class="row align-items-center">
+                                <div class="col-md-2">
+                                    <img src="images/rolex.png" class="img-fluid rounded" alt="Product">
+                                </div>
+                                <div class="col-md-4">
+                                    <h6 class="mb-1">Fossil Smartwatch</h6>
+                                    <p class="text-muted mb-0">Order #ORD-003</p>
+                                    <small class="text-muted">Ordered on March 25, 2024</small>
+                                </div>
+                                <div class="col-md-2">
+                                    <span class="order-status status-pending">Processing</span>
+                                </div>
+                                <div class="col-md-2">
+                                    <h6 class="mb-0">$120.00</h6>
+                                </div>
+                                <div class="col-md-2">
+                                    <button class="btn btn-outline-secondary btn-sm">Cancel Order</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mt-4">
+                            <button class="btn btn-outline-primary">View All Orders</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Change Password Section -->
+                    <div id="changePassword" class="profile-section">
+                        <div class="profile-header">
+                            <h4 class="mb-0">Change Password</h4>
+                            <p class="text-muted">Update your account password</p>
+                        </div>
+                        
+                        <form id="changePasswordForm">
+                            <div class="form-floating">
+                                <input type="password" class="form-control" id="currentPassword" required>
+                                <label for="currentPassword">Current Password</label>
+                            </div>
+                            
+                            <div class="form-floating">
+                                <input type="password" class="form-control" id="newPassword" required>
+                                <label for="newPassword">New Password</label>
+                            </div>
+                            
+                            <div class="form-floating">
+                                <input type="password" class="form-control" id="confirmNewPassword" required>
+                                <label for="confirmNewPassword">Confirm New Password</label>
+                            </div>
+                            
+                            <div class="alert alert-info">
+                                <i class="bi-info-circle me-2"></i>
+                                Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number.
+                            </div>
+                            
+                            <div class="text-end mt-4">
+                                <button type="submit" class="btn btn-save">
+                                    <i class="bi-shield-check me-2"></i>
+                                    Update Password
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showProfileSection(sectionId) {
+    // Hide all sections
+    document.querySelectorAll('.profile-section').forEach(section => {
+        section.classList.remove('active');
+    });
+    
+    // Remove active class from all nav links
+    document.querySelectorAll('.profile-sidebar .nav-link').forEach(link => {
+        link.classList.remove('active');
+    });
+    
+    // Show selected section
+    document.getElementById(sectionId).classList.add('active');
+    
+    // Add active class to clicked nav link
+    event.target.classList.add('active');
+}
+
+// Handle user info form submission
+document.getElementById('userInfoForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    // Here you would typically send the data to your backend
+    console.log('User info update:', {
+        firstName: document.getElementById('firstName').value,
+        lastName: document.getElementById('lastName').value,
+        email: document.getElementById('email').value,
+        phone: document.getElementById('phone').value,
+        address: document.getElementById('address').value,
+        city: document.getElementById('city').value,
+        zipCode: document.getElementById('zipCode').value
+    });
+    
+    // Show success message
+    alert('Profile updated successfully!');
+});
+
+// Handle change password form submission
+document.getElementById('changePasswordForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const currentPassword = document.getElementById('currentPassword').value;
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmNewPassword = document.getElementById('confirmNewPassword').value;
+    
+    // Basic validation
+    if (newPassword !== confirmNewPassword) {
+        alert('New passwords do not match');
+        return;
+    }
+    
+    if (newPassword.length < 8) {
+        alert('Password must be at least 8 characters long');
+        return;
+    }
+    
+    // Here you would typically send the data to your backend
+    console.log('Password change attempt:', {
+        currentPassword,
+        newPassword
+    });
+    
+    // Show success message and clear form
+    alert('Password updated successfully!');
+    this.reset();
+});
+
+// Logout function
+function logout() {
+    if (confirm('Are you sure you want to logout?')) {
+        // Here you would typically clear user session/tokens
+        console.log('User logged out');
+        
+        // Redirect to login page
+        window.location.hash = '#login';
+    }
+}
+</script>

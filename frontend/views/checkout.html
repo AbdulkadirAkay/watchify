@@ -1,0 +1,438 @@
+<style>
+    .checkout-page {
+        min-height: 100vh;
+        background-color: #f8f9fa;
+        padding: 2rem 0;
+    }
+    
+    .checkout-card {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .checkout-header {
+        border-bottom: 1px solid #e9ecef;
+        padding-bottom: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .form-floating {
+        margin-bottom: 1rem;
+    }
+    
+    .payment-method {
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .payment-method:hover {
+        border-color: #0d6efd;
+        background-color: #f8f9ff;
+    }
+    
+    .payment-method.selected {
+        border-color: #0d6efd;
+        background-color: #f8f9ff;
+    }
+    
+    .credit-card-form {
+        display: none;
+        margin-top: 1rem;
+        padding: 1rem;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+    }
+    
+    .credit-card-form.show {
+        display: block;
+    }
+    
+    .card-number-input {
+        font-family: 'Courier New', monospace;
+        letter-spacing: 2px;
+    }
+    
+    .order-summary {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        padding: 1.5rem;
+        height: fit-content;
+        position: sticky;
+        top: 2rem;
+    }
+    
+    .order-item {
+        border-bottom: 1px solid #e9ecef;
+        padding: 1rem 0;
+    }
+    
+    .order-item:last-child {
+        border-bottom: none;
+    }
+    
+    .btn-place-order {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        padding: 1rem 2rem;
+        border-radius: 25px;
+        color: white;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: transform 0.3s ease;
+        width: 100%;
+    }
+    
+    .btn-place-order:hover {
+        transform: translateY(-2px);
+        color: white;
+    }
+    
+    .btn-place-order:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+    }
+    
+</style>
+
+<div class="checkout-page">
+    <div class="container">
+        
+        <div class="row">
+            <!-- Checkout Form -->
+            <div class="col-lg-8">
+                <form id="checkoutForm">
+                    <!-- Shipping Information -->
+                    <div class="checkout-card">
+                        <div class="checkout-header">
+                            <h4 class="mb-0">
+                                <i class="bi-truck me-2"></i>
+                                Shipping Information
+                            </h4>
+                            <p class="text-muted">Enter your delivery details</p>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="firstName" name="firstName" required>
+                                    <label for="firstName">First Name</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="lastName" name="lastName" required>
+                                    <label for="lastName">Last Name</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-floating">
+                            <input type="email" class="form-control" id="email" name="email" required>
+                            <label for="email">Email Address</label>
+                        </div>
+                        
+                        <div class="form-floating">
+                            <input type="tel" class="form-control" id="phone" name="phone" required>
+                            <label for="phone">Phone Number</label>
+                        </div>
+                        
+                        <div class="form-floating">
+                            <input type="text" class="form-control" id="address" name="address" required>
+                            <label for="address">Street Address</label>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="city" name="city" required>
+                                    <label for="city">City</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-floating">
+                                    <select class="form-select" id="state" name="state" required>
+                                        <option value="">Select Canton/Region</option>
+                                        <option value="FBiH-USK">Una-Sana Canton</option>
+                                        <option value="FBiH-PK">Posavina Canton</option>
+                                        <option value="FBiH-TZ">Tuzla Canton</option>
+                                        <option value="FBiH-ZDK">Zenica-Doboj Canton</option>
+                                        <option value="FBiH-BP">Bosnian-Podrinje Canton</option>
+                                        <option value="FBiH-SBK">Central Bosnia Canton</option>
+                                        <option value="FBiH-HNK">Herzegovina-Neretva Canton</option>
+                                        <option value="FBiH-ZHK">West Herzegovina Canton</option>
+                                        <option value="FBiH-SB">Sarajevo Canton</option>
+                                        <option value="FBiH-ZH">Canton 10</option>
+                                        <option value="RS-BL">Banja Luka</option>
+                                        <option value="RS-DO">Doboj</option>
+                                        <option value="RS-BI">Bijeljina</option>
+                                        <option value="RS-VL">Vlasenica</option>
+                                        <option value="RS-SR">Sarajevo-Romanija</option>
+                                        <option value="RS-FO">Foča</option>
+                                        <option value="RS-TR">Trebinje</option>
+                                        <option value="BD-BD">Brčko District</option>
+                                    </select>
+                                    <label for="state">Canton/Region</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="zipCode" name="zipCode" required>
+                                    <label for="zipCode">ZIP Code</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Payment Method -->
+                    <div class="checkout-card">
+                        <div class="checkout-header">
+                            <h4 class="mb-0">
+                                <i class="bi-credit-card me-2"></i>
+                                Payment Method
+                            </h4>
+                            <p class="text-muted">Choose your payment option</p>
+                        </div>
+                        
+                        <div class="payment-method" onclick="selectPaymentMethod('credit')">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="paymentMethod" id="creditCard" value="credit" required>
+                                <label class="form-check-label" for="creditCard">
+                                    <i class="bi-credit-card me-2"></i>
+                                    Credit Card
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="payment-method" onclick="selectPaymentMethod('debit')">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="paymentMethod" id="debitCard" value="debit">
+                                <label class="form-check-label" for="debitCard">
+                                    <i class="bi-credit-card me-2"></i>
+                                    Debit Card
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="payment-method" onclick="selectPaymentMethod('paypal')">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="paymentMethod" id="paypal" value="paypal">
+                                <label class="form-check-label" for="paypal">
+                                    <i class="bi-paypal me-2"></i>
+                                    PayPal
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- Credit Card Form -->
+                        <div id="creditCardForm" class="credit-card-form">
+                            <div class="form-floating">
+                                <input type="text" class="form-control card-number-input" id="cardNumber" name="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19">
+                                <label for="cardNumber">Card Number</label>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control" id="expiryDate" name="expiryDate" placeholder="MM/YY" maxlength="5">
+                                        <label for="expiryDate">Expiry Date</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control" id="cvv" name="cvv" placeholder="123" maxlength="4">
+                                        <label for="cvv">CVV</label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="cardName" name="cardName">
+                                <label for="cardName">Name on Card</label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Order Summary -->
+            <div class="col-lg-4">
+                <div class="order-summary">
+                    <h5 class="mb-3">
+                        <i class="bi-bag me-2"></i>
+                        Order Summary
+                    </h5>
+                    
+                    <div class="order-item">
+                        <div class="row align-items-center">
+                            <div class="col-3">
+                                <img src="images/rolex.png" class="img-fluid rounded" alt="Product">
+                            </div>
+                            <div class="col-6">
+                                <h6 class="mb-1">Fancy Product</h6>
+                                <p class="text-muted mb-0">Brand: Rolex</p>
+                                <small class="text-muted">Qty: 1</small>
+                            </div>
+                            <div class="col-3 text-end">
+                                <h6 class="mb-0">$80.00</h6>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="order-item">
+                        <div class="row align-items-center">
+                            <div class="col-3">
+                                <img src="images/rolex.png" class="img-fluid rounded" alt="Product">
+                            </div>
+                            <div class="col-6">
+                                <h6 class="mb-1">Special Item</h6>
+                                <p class="text-muted mb-0">Brand: Police</p>
+                                <small class="text-muted">Qty: 2</small>
+                            </div>
+                            <div class="col-3 text-end">
+                                <h6 class="mb-0">$36.00</h6>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Subtotal:</span>
+                        <span>$116.00</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Shipping:</span>
+                        <span>$10.00</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Tax:</span>
+                        <span>$12.60</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between mb-3">
+                        <strong>Total:</strong>
+                        <strong>$138.60</strong>
+                    </div>
+                    
+                    <button type="button" class="btn-place-order" onclick="placeOrder()">
+                        <i class="bi-check-circle me-2"></i>
+                        Place Order
+                    </button>
+                    
+                    <div class="text-center mt-3">
+                        <small class="text-muted">
+                            <i class="bi-shield-check me-1"></i>
+                            Secure checkout with SSL encryption
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Payment method selection
+function selectPaymentMethod(method) {
+    // Remove selected class from all payment methods
+    $('.payment-method').removeClass('selected');
+    
+    // Add selected class to clicked payment method
+    $(event.currentTarget).addClass('selected');
+    
+    // Show/hide credit card form
+    const $creditCardForm = $('#creditCardForm');
+    if (method === 'credit' || method === 'debit') {
+        $creditCardForm.addClass('show');
+    } else {
+        $creditCardForm.removeClass('show');
+    }
+}
+
+// Format card number input
+$('#cardNumber').on('input', function() {
+    let value = $(this).val().replace(/\s/g, '').replace(/[^0-9]/gi, '');
+    let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+    $(this).val(formattedValue);
+});
+
+// Format expiry date input
+$('#expiryDate').on('input', function() {
+    let value = $(this).val().replace(/\D/g, '');
+    if (value.length >= 2) {
+        value = value.substring(0, 2) + '/' + value.substring(2, 4);
+    }
+    $(this).val(value);
+});
+
+// Format CVV input
+$('#cvv').on('input', function() {
+    $(this).val($(this).val().replace(/[^0-9]/g, ''));
+});
+
+// Place order function
+function placeOrder() {
+    const $form = $('#checkoutForm');
+    const formData = $form.serializeArray();
+    
+    // Basic validation
+    const requiredFields = ['firstName', 'lastName', 'email', 'phone', 'address', 'city', 'state', 'zipCode', 'paymentMethod'];
+    let isValid = true;
+    
+    $.each(requiredFields, function(index, field) {
+        const $input = $('#' + field).length ? $('#' + field) : $('input[name="' + field + '"]:checked');
+        if (!$input.length || !$input.val().trim()) {
+            isValid = false;
+            return false; // break the loop
+        }
+    });
+    
+    // Validate credit card if selected
+    const $paymentMethod = $('input[name="paymentMethod"]:checked');
+    if ($paymentMethod.length && ($paymentMethod.val() === 'credit' || $paymentMethod.val() === 'debit')) {
+        const cardNumber = $('#cardNumber').val().replace(/\s/g, '');
+        const expiryDate = $('#expiryDate').val();
+        const cvv = $('#cvv').val();
+        const cardName = $('#cardName').val();
+        
+        if (!cardNumber || !expiryDate || !cvv || !cardName) {
+            isValid = false;
+        }
+        
+        // Basic card number validation (Luhn algorithm would be better)
+        if (cardNumber.length < 13 || cardNumber.length > 19) {
+            isValid = false;
+        }
+    }
+    
+    if (!isValid) {
+        alert('Please fill in all required fields correctly.');
+        return;
+    }
+    
+    // Disable button to prevent double submission
+    const $orderBtn = $('.btn-place-order');
+    $orderBtn.prop('disabled', true);
+    $orderBtn.html('<i class="bi-hourglass-split me-2"></i>Processing...');
+    
+    // Simulate order processing
+    setTimeout(() => {
+        // Here you would typically send the data to your backend
+        console.log('Order placed:', formData);
+        
+        // Redirect to success page
+        window.location.hash = '#order-success';
+    }, 2000);
+}
+
+
+</script>
