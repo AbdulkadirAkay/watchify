@@ -6,20 +6,6 @@ class OrderProductDao extends BaseDao {
         parent::__construct("order_product");
     }
 
-    public function getByOrderId($order_id) {
-        $stmt = $this->connection->prepare("SELECT * FROM order_product WHERE order_id = :order_id");
-        $stmt->bindParam(':order_id', $order_id);
-        $stmt->execute();
-        return $stmt->fetchAll();
-    }
-
-    public function getByProductId($product_id) {
-        $stmt = $this->connection->prepare("SELECT * FROM order_product WHERE product_id = :product_id");
-        $stmt->bindParam(':product_id', $product_id);
-        $stmt->execute();
-        return $stmt->fetchAll();
-    }
-
     public function getOrderProductsWithDetails($order_id) {
         $stmt = $this->connection->prepare("
             SELECT op.*, p.name as product_name, p.brand, p.image_url 

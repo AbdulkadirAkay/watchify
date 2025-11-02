@@ -294,12 +294,6 @@ echo "<h3>Reading Order Products:</h3>";
 $allOrderProducts = $orderProductDao->getAll();
 echo "Total order products: " . count($allOrderProducts) . "<br>";
 
-$orderProductsByOrder = $orderProductDao->getByOrderId($order1Result);
-echo "Products in order " . $order1Result . ": " . count($orderProductsByOrder) . "<br>";
-
-$orderProductsByProduct = $orderProductDao->getByProductId($prod1Result);
-echo "Orders containing product " . $prod1Result . ": " . count($orderProductsByProduct) . "<br>";
-
 $orderProductsWithDetails = $orderProductDao->getOrderProductsWithDetails($order1Result);
 echo "Order products with details for order " . $order1Result . ": " . count($orderProductsWithDetails) . "<br>";
 
