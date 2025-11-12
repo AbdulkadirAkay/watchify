@@ -1,5 +1,5 @@
 <?php
-require_once 'BaseDao.php';
+require_once __DIR__ . '/BaseDao.php';
 
 class OrderProductDao extends BaseDao {
     public function __construct() {
