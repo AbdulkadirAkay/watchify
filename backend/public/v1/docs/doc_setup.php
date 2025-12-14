@@ -38,6 +38,14 @@
  */
 
 /**
+ * Global security requirement so Swagger UI sends the header for all operations
+ *
+ * @OA\SecurityRequirement(
+ *     name="ApiKey"
+ * )
+ */
+
+/**
  * @OA\Schema(
  *     schema="Error",
  *     type="object",

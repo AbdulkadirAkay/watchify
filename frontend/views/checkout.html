@@ -78,27 +78,8 @@
         border-bottom: none;
     }
     
-    .btn-place-order {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: none;
-        padding: 1rem 2rem;
-        border-radius: 25px;
-        color: white;
-        font-weight: 600;
-        font-size: 1.1rem;
-        transition: transform 0.3s ease;
-        width: 100%;
-    }
-    
-    .btn-place-order:hover {
-        transform: translateY(-2px);
-        color: white;
-    }
-    
-    .btn-place-order:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-        transform: none;
+    .border-danger {
+        border: 2px solid #dc3545 !important;
     }
     
 </style>
@@ -204,7 +185,7 @@
                         
                         <div class="payment-method" onclick="selectPaymentMethod('credit')">
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="paymentMethod" id="creditCard" value="credit" required>
+                                <input class="form-check-input" type="radio" name="paymentMethod" id="creditCard" value="credit_card" required>
                                 <label class="form-check-label" for="creditCard">
                                     <i class="bi-credit-card me-2"></i>
                                     Credit Card
@@ -214,7 +195,7 @@
                         
                         <div class="payment-method" onclick="selectPaymentMethod('debit')">
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="paymentMethod" id="debitCard" value="debit">
+                                <input class="form-check-input" type="radio" name="paymentMethod" id="debitCard" value="debit_card">
                                 <label class="form-check-label" for="debitCard">
                                     <i class="bi-credit-card me-2"></i>
                                     Debit Card
@@ -271,59 +252,31 @@
                         Order Summary
                     </h5>
                     
-                    <div class="order-item">
-                        <div class="row align-items-center">
-                            <div class="col-3">
-                                <img src="images/rolex.png" class="img-fluid rounded" alt="Product">
-                            </div>
-                            <div class="col-6">
-                                <h6 class="mb-1">Fancy Product</h6>
-                                <p class="text-muted mb-0">Brand: Rolex</p>
-                                <small class="text-muted">Qty: 1</small>
-                            </div>
-                            <div class="col-3 text-end">
-                                <h6 class="mb-0">$80.00</h6>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="order-item">
-                        <div class="row align-items-center">
-                            <div class="col-3">
-                                <img src="images/rolex.png" class="img-fluid rounded" alt="Product">
-                            </div>
-                            <div class="col-6">
-                                <h6 class="mb-1">Special Item</h6>
-                                <p class="text-muted mb-0">Brand: Police</p>
-                                <small class="text-muted">Qty: 2</small>
-                            </div>
-                            <div class="col-3 text-end">
-                                <h6 class="mb-0">$36.00</h6>
-                            </div>
-                        </div>
+                    <div id="orderItemsContainer">
+                        <!-- Order items will be dynamically inserted here -->
                     </div>
                     
                     <hr>
                     
                     <div class="d-flex justify-content-between mb-2">
                         <span>Subtotal:</span>
-                        <span>$116.00</span>
+                        <span id="subtotalAmount">$0.00</span>
                     </div>
                     <div class="d-flex justify-content-between mb-2">
                         <span>Shipping:</span>
-                        <span>$10.00</span>
+                        <span id="shippingAmount">Free</span>
                     </div>
                     <div class="d-flex justify-content-between mb-2">
                         <span>Tax:</span>
-                        <span>$12.60</span>
+                        <span id="taxAmount">$0.00</span>
                     </div>
                     <hr>
                     <div class="d-flex justify-content-between mb-3">
                         <strong>Total:</strong>
-                        <strong>$138.60</strong>
+                        <strong id="totalAmount">$0.00</strong>
                     </div>
                     
-                    <button type="button" class="btn-place-order" onclick="placeOrder()">
+                    <button type="button" class="btn btn-primary w-100" onclick="placeOrder()">
                         <i class="bi-check-circle me-2"></i>
                         Place Order
                     </button>
@@ -341,6 +294,128 @@
 </div>
 
 <script>
+// Initialize checkout page
+function initCheckout() {
+    console.log('Checkout page initialized');
+    
+    // Check if user is logged in
+    var token = localStorage.getItem("user_token");
+    if (!token) {
+        if (typeof Utils !== "undefined" && Utils.showError) {
+            Utils.showError("Please login to checkout.");
+        }
+        window.location.hash = "#login";
+        return;
+    }
+    
+    // Check if cart has items
+    if (typeof CartService === "undefined") {
+        console.error("CartService not available");
+        return;
+    }
+    
+    var cart = CartService.getCart();
+    if (!cart || cart.length === 0) {
+        if (typeof Utils !== "undefined" && Utils.showError) {
+            Utils.showError("Your cart is empty.");
+        }
+        window.location.hash = "#cart";
+        return;
+    }
+    
+    // Load user data and populate form
+    loadUserData();
+    
+    // Render cart items in order summary
+    renderOrderSummary();
+}
+
+// Load user data and populate form fields
+function loadUserData() {
+    var token = localStorage.getItem("user_token");
+    if (!token || typeof Utils === "undefined" || !Utils.parseJwt) {
+        return;
+    }
+    
+    var payload = Utils.parseJwt(token);
+    var user = payload ? payload.user : null;
+    
+    if (!user || !user.id) {
+        return;
+    }
+    
+    // Fetch full user data from backend
+    RestClient.get(
+        "api/users/" + user.id,
+        function(res) {
+            if (res && res.success && res.data) {
+                var userData = res.data;
+                
+                // Populate form fields
+                $('#firstName').val(userData.name || '');
+                $('#lastName').val(userData.last_name || '');
+                $('#email').val(userData.email || '');
+                $('#phone').val(userData.phone || '');
+                $('#address').val(userData.address || '');
+                $('#city').val(userData.city || '');
+                $('#zipCode').val(userData.zip_code || '');
+            }
+        },
+        function(jqXHR) {
+            console.error("Failed to load user data:", jqXHR);
+        }
+    );
+}
+
+// Render order summary from cart
+function renderOrderSummary() {
+    if (typeof CartService === "undefined") return;
+    
+    var cart = CartService.getCart();
+    var $orderItemsContainer = $('#orderItemsContainer');
+    
+    // Clear existing items
+    $orderItemsContainer.empty();
+    
+    // Render each cart item
+    cart.forEach(function(item) {
+        var img = item.image_url || "images/no-image-placeholder.png";
+        var price = parseFloat(item.price) || 0;
+        var itemTotal = (price * item.quantity).toFixed(2);
+        
+        var itemHtml = `
+            <div class="order-item">
+                <div class="row align-items-center">
+                    <div class="col-3">
+                        <img src="${img}" class="img-fluid rounded" alt="${item.name || ''}">
+                    </div>
+                    <div class="col-6">
+                        <h6 class="mb-1">${item.name || 'Unnamed product'}</h6>
+                        <p class="text-muted mb-0">${item.brand || ''}</p>
+                        <small class="text-muted">Qty: ${item.quantity}</small>
+                    </div>
+                    <div class="col-3 text-end">
+                        <h6 class="mb-0">$${itemTotal}</h6>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        $orderItemsContainer.append(itemHtml);
+    });
+    
+    // Update totals
+    var subtotal = CartService.getCartTotal();
+    var shipping = 0; // Free shipping
+    var tax = 0; // No tax for now
+    var total = subtotal + shipping + tax;
+    
+    $('#subtotalAmount').text('$' + subtotal.toFixed(2));
+    $('#shippingAmount').text(shipping === 0 ? 'Free' : '$' + shipping.toFixed(2));
+    $('#taxAmount').text('$' + tax.toFixed(2));
+    $('#totalAmount').text('$' + total.toFixed(2));
+}
+
 // Payment method selection
 function selectPaymentMethod(method) {
     // Remove selected class from all payment methods
@@ -379,60 +454,229 @@ $('#cvv').on('input', function() {
     $(this).val($(this).val().replace(/[^0-9]/g, ''));
 });
 
+// Remove invalid class when user starts typing
+$('.form-control, .form-select').on('input change', function() {
+    $(this).removeClass('is-invalid');
+});
+
 // Place order function
 function placeOrder() {
     const $form = $('#checkoutForm');
-    const formData = $form.serializeArray();
+    
+    // Remove all previous error highlights
+    $('.form-control, .form-select').removeClass('is-invalid');
+    $('.payment-method').removeClass('border-danger');
     
     // Basic validation
-    const requiredFields = ['firstName', 'lastName', 'email', 'phone', 'address', 'city', 'state', 'zipCode', 'paymentMethod'];
+    const requiredFields = ['firstName', 'lastName', 'email', 'phone', 'address', 'city', 'state', 'zipCode'];
     let isValid = true;
+    let firstInvalidField = null;
     
     $.each(requiredFields, function(index, field) {
-        const $input = $('#' + field).length ? $('#' + field) : $('input[name="' + field + '"]:checked');
-        if (!$input.length || !$input.val().trim()) {
+        const $input = $('#' + field);
+        if (!$input.length || !$input.val() || !$input.val().toString().trim()) {
             isValid = false;
-            return false; // break the loop
+            
+            // Highlight the invalid field
+            $input.addClass('is-invalid');
+            if (!firstInvalidField) {
+                firstInvalidField = $input;
+            }
         }
     });
     
-    // Validate credit card if selected
+    // Validate payment method separately
     const $paymentMethod = $('input[name="paymentMethod"]:checked');
-    if ($paymentMethod.length && ($paymentMethod.val() === 'credit' || $paymentMethod.val() === 'debit')) {
-        const cardNumber = $('#cardNumber').val().replace(/\s/g, '');
+    if (!$paymentMethod.length || !$paymentMethod.val()) {
+        isValid = false;
+        $('.payment-method').addClass('border-danger');
+        if (!firstInvalidField) {
+            firstInvalidField = $('.payment-method').first();
+        }
+    }
+    
+    // Validate credit card if selected
+    if ($paymentMethod.length && ($paymentMethod.val() === 'credit_card' || $paymentMethod.val() === 'debit_card')) {
+        const cardNumber = $('#cardNumber').val() ? $('#cardNumber').val().replace(/\s/g, '') : '';
         const expiryDate = $('#expiryDate').val();
         const cvv = $('#cvv').val();
         const cardName = $('#cardName').val();
         
         if (!cardNumber || !expiryDate || !cvv || !cardName) {
             isValid = false;
+            if (!cardNumber) {
+                $('#cardNumber').addClass('is-invalid');
+                if (!firstInvalidField) firstInvalidField = $('#cardNumber');
+            }
+            if (!expiryDate) {
+                $('#expiryDate').addClass('is-invalid');
+                if (!firstInvalidField) firstInvalidField = $('#expiryDate');
+            }
+            if (!cvv) {
+                $('#cvv').addClass('is-invalid');
+                if (!firstInvalidField) firstInvalidField = $('#cvv');
+            }
+            if (!cardName) {
+                $('#cardName').addClass('is-invalid');
+                if (!firstInvalidField) firstInvalidField = $('#cardName');
+            }
         }
         
-        // Basic card number validation (Luhn algorithm would be better)
-        if (cardNumber.length < 13 || cardNumber.length > 19) {
+        // Basic card number validation
+        if (cardNumber && (cardNumber.length < 13 || cardNumber.length > 19)) {
             isValid = false;
+            $('#cardNumber').addClass('is-invalid');
+            if (!firstInvalidField) firstInvalidField = $('#cardNumber');
         }
     }
     
     if (!isValid) {
-        alert('Please fill in all required fields correctly.');
+        // Focus on first invalid field
+        if (firstInvalidField) {
+            if (firstInvalidField.is('input')) {
+                firstInvalidField.focus();
+            }
+        }
+        
+        if (typeof Utils !== "undefined" && Utils.showError) {
+            Utils.showError('Please fill in all required fields correctly.');
+        } else {
+            alert('Please fill in all required fields correctly.');
+        }
         return;
     }
     
+    // Get payment method value
+    const paymentMethod = $paymentMethod.val();
+    
+    // Get cart data
+    if (typeof CartService === "undefined") {
+        console.error("CartService not available");
+        return;
+    }
+    
+    var cart = CartService.getCart();
+    if (!cart || cart.length === 0) {
+        if (typeof Utils !== "undefined" && Utils.showError) {
+            Utils.showError("Your cart is empty.");
+        }
+        return;
+    }
+    
+    // Get user ID from token
+    var token = localStorage.getItem("user_token");
+    if (!token || typeof Utils === "undefined" || !Utils.parseJwt) {
+        if (typeof Utils !== "undefined" && Utils.showError) {
+            Utils.showError("Please login to place order.");
+        }
+        window.location.hash = "#login";
+        return;
+    }
+    
+    var payload = Utils.parseJwt(token);
+    var user = payload ? payload.user : null;
+    
+    if (!user || !user.id) {
+        if (typeof Utils !== "undefined" && Utils.showError) {
+            Utils.showError("Invalid user session.");
+        }
+        window.location.hash = "#login";
+        return;
+    }
+    
+    // Calculate totals
+    var subtotal = CartService.getCartTotal();
+    var shipping = 0; // Free shipping
+    var total = subtotal + shipping;
+    
+    // Build order data
+    var orderData = {
+        user_id: user.id,
+        total_price: total,
+        shipping_cost: shipping,
+        payment_method: paymentMethod,
+        address: $('#address').val() + ', ' + $('#city').val() + ', ' + $('#state').val() + ' ' + $('#zipCode').val(),
+        status: 'pending',
+        products: cart.map(function(item) {
+            return {
+                product_id: item.productId,
+                quantity: item.quantity,
+                unit_price: parseFloat(item.price)
+            };
+        })
+    };
+    
+    // Log the order data for debugging
+    console.log('Order data:', orderData);
+    
     // Disable button to prevent double submission
-    const $orderBtn = $('.btn-place-order');
+    const $orderBtn = $('.btn-primary');
     $orderBtn.prop('disabled', true);
     $orderBtn.html('<i class="bi-hourglass-split me-2"></i>Processing...');
     
-    // Simulate order processing
-    setTimeout(() => {
-        // Here you would typically send the data to your backend
-        console.log('Order placed:', formData);
-        
-        // Redirect to success page
-        window.location.hash = '#order-success';
-    }, 2000);
+    // Submit order to backend
+    RestClient.post(
+        'api/orders',
+        orderData,
+        function(res) {
+            if (res && res.success) {
+                // Store order details for success page
+                var orderDetails = {
+                    orderId: res.data && res.data.id ? res.data.id : 'N/A',
+                    total: total.toFixed(2),
+                    paymentMethod: paymentMethod,
+                    address: orderData.address,
+                    date: new Date().toISOString(),
+                    items: cart
+                };
+                localStorage.setItem('last_order', JSON.stringify(orderDetails));
+                
+                // Clear cart
+                CartService.clearCart();
+                
+                if (typeof Utils !== "undefined" && Utils.showSuccess) {
+                    Utils.showSuccess('Order placed successfully!');
+                }
+                
+                // Redirect to success page
+                window.location.hash = '#order-success';
+            } else {
+                $orderBtn.prop('disabled', false);
+                $orderBtn.html('<i class="bi-check-circle me-2"></i>Place Order');
+                
+                if (typeof Utils !== "undefined" && Utils.showError) {
+                    Utils.showError(res.message || res.error || 'Failed to place order.');
+                } else {
+                    alert('Failed to place order: ' + (res.message || res.error || 'Unknown error'));
+                }
+            }
+        },
+        function(jqXHR) {
+            $orderBtn.prop('disabled', false);
+            $orderBtn.html('<i class="bi-check-circle me-2"></i>Place Order');
+            
+            var res = jqXHR && jqXHR.responseJSON;
+            var msg = (res && (res.message || res.error)) || jqXHR.responseText || 'Failed to place order';
+            
+            if (typeof Utils !== "undefined" && Utils.showError) {
+                Utils.showError(msg);
+            } else {
+                alert('Error: ' + msg);
+            }
+        }
+    );
 }
 
+// Initialize on page load
+if (window.location.hash.includes("#checkout")) {
+    initCheckout();
+}
+
+// Listen for hash changes
+$(window).on('hashchange', function() {
+    if (window.location.hash.includes("#checkout")) {
+        initCheckout();
+    }
+});
 
 </script>

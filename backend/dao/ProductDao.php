@@ -48,6 +48,12 @@ class ProductDao extends BaseDao {
         return $stmt->fetchAll();
     }
 
+    public function getUniqueBrands() {
+        $stmt = $this->connection->prepare("SELECT DISTINCT brand FROM products WHERE brand IS NOT NULL AND brand != '' ORDER BY brand ASC");
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
     public function updateQuantity($id, $quantity) {
         $stmt = $this->connection->prepare("UPDATE products SET quantity = :quantity, updated_at = NOW() WHERE id = :id");
         $stmt->bindParam(':quantity', $quantity);

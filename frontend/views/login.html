@@ -30,7 +30,9 @@
             <h2 class="fw-bold text-primary">Welcome Back</h2>
             <p class="text-muted">Sign in to your account</p>
         </div>
-        
+
+        <div id="loginAlert" class="alert alert-danger d-none" role="alert"></div>
+
         <form id="loginForm">
             <div class="mb-3">
                 <label for="email" class="form-label">Email Address</label>
@@ -41,7 +43,7 @@
                 <input type="password" class="form-control" id="password" name="password" required>
             </div>
             <div class="d-grid mb-3">
-                <button type="submit" class="btn btn-primary btn-lg" onclick = "windown.location.hash = '#home'">Login</button>
+                <button type="submit" class="btn btn-primary btn-lg">Login</button>
             </div>
         </form>
         
@@ -53,3 +55,6 @@
         </div>
     </div>
 </div>
+<script>
+     UserService.init();
+</script>

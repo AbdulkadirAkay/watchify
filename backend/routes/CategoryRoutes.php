@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/../middleware/AuthMiddleware.php';
+require_once __DIR__ . '/../data/Roles.php';
 
 /**
  * @OA\Tag(
@@ -17,6 +19,7 @@ class CategoryRoutes {
          *     tags={"Categories"},
          *     summary="Get all categories",
          *     description="Retrieve a list of all categories",
+         *     security={{"ApiKey":{}}},
          *     @OA\Response(
          *         response=200,
          *         description="List of categories",
@@ -41,6 +44,7 @@ class CategoryRoutes {
          *     tags={"Categories"},
          *     summary="Get categories with product count",
          *     description="Retrieve all categories with the number of products in each category",
+         *     security={{"ApiKey":{}}},
          *     @OA\Response(
          *         response=200,
          *         description="List of categories with product counts",
@@ -65,6 +69,7 @@ class CategoryRoutes {
          *     tags={"Categories"},
          *     summary="Get category by ID",
          *     description="Retrieve a specific category by ID",
+         *     security={{"ApiKey":{}}},
          *     @OA\Parameter(
          *         name="id",
          *         in="path",
@@ -97,6 +102,7 @@ class CategoryRoutes {
          *     tags={"Categories"},
          *     summary="Get category by name",
          *     description="Retrieve a category by its name",
+         *     security={{"ApiKey":{}}},
          *     @OA\Parameter(
          *         name="name",
          *         in="path",
@@ -128,6 +134,7 @@ class CategoryRoutes {
          *     tags={"Categories"},
          *     summary="Create a new category",
          *     description="Add a new product category",
+         *     security={{"ApiKey":{}}},
          *     @OA\RequestBody(
          *         required=true,
          *         @OA\JsonContent(
@@ -149,6 +156,9 @@ class CategoryRoutes {
          * )
          */
         Flight::route('POST /api/categories', function() {
+            // Only admins can create categories
+            AuthMiddleware::authorizeRole(Roles::ADMIN);
+
             $service = Flight::categoryService();
             $data = Flight::request()->data->getData();
             $result = $service->create($data);
@@ -161,6 +171,7 @@ class CategoryRoutes {
          *     tags={"Categories"},
          *     summary="Update category",
          *     description="Update category information",
+         *     security={{"ApiKey":{}}},
          *     @OA\Parameter(
          *         name="id",
          *         in="path",
@@ -184,6 +195,9 @@ class CategoryRoutes {
          * )
          */
         Flight::route('PUT /api/categories/@id', function($id) {
+            // Only admins can update categories
+            AuthMiddleware::authorizeRole(Roles::ADMIN);
+
             $service = Flight::categoryService();
             $data = Flight::request()->data->getData();
             $result = $service->update($id, $data);
@@ -196,6 +210,7 @@ class CategoryRoutes {
          *     tags={"Categories"},
          *     summary="Delete category",
          *     description="Delete a category by ID. Cannot delete if category has associated products.",
+         *     security={{"ApiKey":{}}},
          *     @OA\Parameter(
          *         name="id",
          *         in="path",
@@ -213,6 +228,9 @@ class CategoryRoutes {
          * )
          */
         Flight::route('DELETE /api/categories/@id', function($id) {
+            // Only admins can delete categories
+            AuthMiddleware::authorizeRole(Roles::ADMIN);
+
             $service = Flight::categoryService();
             $result = $service->delete($id);
             Flight::json($result, $result['success'] ? 200 : 400);

@@ -23,64 +23,6 @@
     .products-grid {
         padding: 2rem 0;
     }
-    
-    .product-card {
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        border: none;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-    
-    .product-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-    }
-    
-    .product-image {
-        height: 250px;
-        object-fit: cover;
-        border-radius: 8px 8px 0 0;
-    }
-    
-    .sale-badge {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
-        color: white;
-        padding: 0.5rem 1rem;
-        border-radius: 20px;
-        font-size: 0.875rem;
-        font-weight: 600;
-        z-index: 2;
-    }
-    
-    .price-original {
-        text-decoration: line-through;
-        color: #6c757d;
-        font-size: 0.9rem;
-    }
-    
-    .price-sale {
-        color: #dc3545;
-        font-weight: 600;
-    }
-    
-    .btn-add-cart {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: none;
-        color: white;
-        padding: 0.75rem 1.5rem;
-        border-radius: 25px;
-        font-weight: 500;
-        transition: transform 0.3s ease;
-    }
-    
-    .btn-add-cart:hover {
-        transform: translateY(-2px);
-        color: white;
-    }
-    
-    
     .filter-section {
         background: white;
         border-radius: 10px;
@@ -152,183 +94,113 @@
 </div>
 
 <script>
-// Sample products data (in a real app, this would come from an API)
-const productsData = [
-    {
-        id: 1,
-        name: "Fancy Product",
-        price: 80.00,
-        originalPrice: null,
-        image: "images/rolex.png",
-        category: "men",
-        brand: "Rolex",
-        onSale: false
-    },
-    {
-        id: 2,
-        name: "Special Item",
-        price: 18.00,
-        originalPrice: 20.00,
-        image: "images/rolex.png",
-        category: "women",
-        brand: "Police",
-        onSale: true
-    },
-    {
-        id: 3,
-        name: "Sale Item",
-        price: 25.00,
-        originalPrice: 50.00,
-        image: "images/rolex.png",
-        category: "men",
-        brand: "Fossil",
-        onSale: true
-    },
-    {
-        id: 4,
-        name: "Popular Item",
-        price: 40.00,
-        originalPrice: null,
-        image: "images/rolex.png",
-        category: "women",
-        brand: "Festina",
-        onSale: false
-    }
-];
-
-// Category mapping by ID (you can map these to your database)
-const categoryMap = {
-    '1': {
-        title: 'Men\'s Watches',
-        description: 'Discover our collection of premium men\'s watches',
-        breadcrumb: 'Men\'s Collection'
-    },
-    '2': {
-        title: 'Women\'s Watches',
-        description: 'Elegant and stylish watches for women',
-        breadcrumb: 'Women\'s Collection'
-    },
-    '3': {
-        title: 'Kids\' Watches',
-        description: 'Fun and colorful watches for children',
-        breadcrumb: 'Kids\' Collection'
-    },
-    '4': {
-        title: 'Police Watches',
-        description: 'Bold and distinctive Police watch collection',
-        breadcrumb: 'Police Brand'
-    },
-    '5': {
-        title: 'Rolex Watches',
-        description: 'Luxury timepieces from the world\'s most prestigious brand',
-        breadcrumb: 'Rolex Brand'
-    },
-    '6': {
-        title: 'Fossil Watches',
-        description: 'Modern and trendy Fossil watch collection',
-        breadcrumb: 'Fossil Brand'
-    },
-    '7': {
-        title: 'Festina Watches',
-        description: 'Quality timepieces with European style',
-        breadcrumb: 'Festina Brand'
-    },
-    '8': {
-        title: 'Patek Philippe Watches',
-        description: 'Exclusive luxury watches from Patek Philippe',
-        breadcrumb: 'Patek Philippe Brand'
-    }
-};
-
 // Get category ID from URL hash query parameters
 function getCategoryId() {
-    // Use the hash with parameters that was stored
-    const hash = window.currentHashWithParams || window.location.hash;
-    let categoryId = '1'; // default to ID 1
+    const hash = window.location.hash;
+    let categoryId = null;
     
     if (hash && hash.includes('?')) {
         const hashParts = hash.split('?');
         if (hashParts.length > 1) {
             const queryString = hashParts[1];
             const urlParams = new URLSearchParams(queryString);
-            categoryId = urlParams.get('id') || '1';
+            categoryId = urlParams.get('id');
         }
     }
     
     return categoryId;
 }
 
+// Load category details from backend
+function loadCategoryDetails(categoryId, callback) {
+    RestClient.get(
+        'api/categories/' + categoryId,
+        function(res) {
+            if (res && res.success && res.data) {
+                const category = res.data;
+                // Update page header with category info from database
+                $('#categoryTitle').text(category.name + ' Watches');
+                $('#categoryDescription').text('Discover our collection of ' + category.name + ' watches');
+                $('#breadcrumbCategory').text(category.name + ' Collection');
+                $('#breadcrumbCurrent').text(category.name);
+                
+                if (callback) callback();
+            } else {
+                // Fallback if category not found
+                $('#categoryTitle').text('Category Watches');
+                $('#categoryDescription').text('Discover our amazing collection');
+                $('#breadcrumbCategory').text('Categories');
+                $('#breadcrumbCurrent').text('Products');
+                
+                if (callback) callback();
+            }
+        },
+        function(error) {
+            // Fallback on error
+            $('#categoryTitle').text('Category Watches');
+            $('#categoryDescription').text('Discover our amazing collection');
+            $('#breadcrumbCategory').text('Categories');
+            $('#breadcrumbCurrent').text('Products');
+            
+            if (callback) callback();
+        }
+    );
+}
+
 // Load products based on category ID
 function loadProducts() {
     const categoryId = getCategoryId();
+    
+    if (!categoryId) {
+        Utils.showError("Category not specified");
+        $('#loadingSpinner').hide();
+        $('#productsGrid').hide();
+        $('#noProducts').show();
+        return;
+    }
     
     // Show loading spinner
     $('#loadingSpinner').show();
     $('#productsGrid').hide();
     $('#noProducts').hide();
     
-    // Simulate API call delay
-    setTimeout(() => {
-        // Get category info
-        const categoryInfo = categoryMap[categoryId] || categoryMap['1'];
-        
-        // Update page title and info
-        $('#categoryTitle').text(categoryInfo.title);
-        $('#categoryDescription').text(categoryInfo.description);
-        $('#breadcrumbCategory').text(categoryInfo.breadcrumb);
-        $('#breadcrumbCurrent').text(categoryInfo.title);
-        
-        // Filter products by category ID (in a real app, this would be done by the API)
-        // For demo purposes, we'll show different products based on category ID
-        let filteredProducts = [];
-        
-        switch(categoryId) {
-            case '1': // Men's watches
-                filteredProducts = productsData.filter(product => product.category === 'men');
-                break;
-            case '2': // Women's watches
-                filteredProducts = productsData.filter(product => product.category === 'women');
-                break;
-            case '3': // Kids' watches
-                filteredProducts = productsData.filter(product => product.category === 'kids');
-                break;
-            case '4': // Police brand
-                filteredProducts = productsData.filter(product => product.brand === 'Police');
-                break;
-            case '5': // Rolex brand
-                filteredProducts = productsData.filter(product => product.brand === 'Rolex');
-                break;
-            case '6': // Fossil brand
-                filteredProducts = productsData.filter(product => product.brand === 'Fossil');
-                break;
-            case '7': // Festina brand
-                filteredProducts = productsData.filter(product => product.brand === 'Festina');
-                break;
-            case '8': // Patek Philippe brand
-                filteredProducts = productsData.filter(product => product.brand === 'Patek Philippe');
-                break;
-            default:
-                filteredProducts = productsData.slice(0, 4); // Show first 4 products as fallback
-        }
-        
-        // If no products found, show all products as fallback
-        const productsToShow = filteredProducts.length > 0 ? filteredProducts : productsData.slice(0, 4);
-        
-        // Render products
-        renderProducts(productsToShow);
-        
-        // Hide loading spinner
-        $('#loadingSpinner').hide();
-        
-        if (productsToShow.length > 0) {
-            $('#productsGrid').show();
-        } else {
-            $('#noProducts').show();
-        }
-        
-        // Add query parameter virtually to URL after items are loaded
-        addQueryParameterToURL(categoryId);
-    }, 100);
+    // First load category details, then load products
+    loadCategoryDetails(categoryId, function() {
+        // Call backend to get products for this category
+        RestClient.get(
+            'api/products/category/' + categoryId,
+            function(res) {
+                $('#loadingSpinner').hide();
+
+                if (!res || !res.success || !Array.isArray(res.data) || res.data.length === 0) {
+                    $('#productsGrid').hide();
+                    $('#noProducts').show();
+
+                    if (!res || !res.success) {
+                        Utils.showError(
+                            (res && (res.message || res.error)) || 'Failed to load products'
+                        );
+                    }
+                    return;
+                }
+
+                renderProducts(res.data);
+                $('#productsGrid').show();
+                $('#noProducts').hide();
+            },
+            function(jqXHR) {
+                $('#loadingSpinner').hide();
+                $('#productsGrid').hide();
+                $('#noProducts').show();
+
+                const res = jqXHR && jqXHR.responseJSON;
+                const msg = (res && (res.message || res.error)) ||
+                            jqXHR.responseText ||
+                            'Failed to load products';
+                Utils.showError(msg);
+            }
+        );
+    });
 }
 
 // Render products
@@ -337,104 +209,17 @@ function renderProducts(products) {
     container.empty();
     
     products.forEach(product => {
-        const productCard = createProductCard(product);
+        const productCard = ProductService.createProductCard(product);
         container.append(productCard);
     });
 }
 
-// Create product card HTML
-function createProductCard(product) {
-    const saleBadge = product.onSale ? 
-        '<div class="sale-badge">Sale</div>' : '';
-    
-    const priceHtml = product.originalPrice ? 
-        `<span class="price-original">$${product.originalPrice.toFixed(2)}</span>
-         <span class="price-sale">$${product.price.toFixed(2)}</span>` :
-        `<span class="fw-bold">$${product.price.toFixed(2)}</span>`;
-    
-    return `
-        <div class="col mb-5">
-            <div class="card h-100 product-card position-relative">
-                ${saleBadge}
-                <img class="card-img-top product-image" src="${product.image}" alt="${product.name}" />
-                <div class="card-body p-4">
-                    <div class="text-center">
-                        <h5 class="fw-bolder">${product.name}</h5>
-                        <p class="text-muted mb-2">${product.brand}</p>
-                        <div class="mb-3">
-                            ${priceHtml}
-                        </div>
-                    </div>
-                </div>
-                <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                    <div class="text-center">
-                        <button class="btn btn-add-cart w-100" onclick="addToCart(${product.id})">
-                            <i class="bi-cart-plus me-2"></i>
-                            Add to Cart
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
+
+// Initialize page - this will be called by spapp's onReady
+function initCategoryProducts(params) {
+    console.log('Category products initialized with params:', params);
+    loadProducts();
 }
-
-// Add query parameter virtually to URL
-function addQueryParameterToURL(categoryId) {
-    // Only add if we don't already have the parameter in the URL
-    const currentHash = window.location.hash;
-    const expectedHash = `#category-products?id=${categoryId}`;
-    
-    if (currentHash !== expectedHash) {
-        // Use history.replaceState to update URL without triggering navigation
-        const newURL = window.location.pathname + expectedHash;
-        window.history.replaceState(null, '', newURL);
-        
-        // Update the stored hash with parameters
-        window.currentHashWithParams = expectedHash;
-    }
-}
-
-// Add to cart function
-function addToCart(productId) {
-    // Here you would typically add the product to cart
-    console.log('Adding product to cart:', productId);
-    
-    // Show success message
-    const btn = event.target.closest('button');
-    const originalText = btn.innerHTML;
-    btn.innerHTML = '<i class="bi-check me-2"></i>Added!';
-    btn.classList.add('btn-success');
-    btn.classList.remove('btn-add-cart');
-    
-    setTimeout(() => {
-        btn.innerHTML = originalText;
-        btn.classList.remove('btn-success');
-        btn.classList.add('btn-add-cart');
-    }, 2000);
-}
-
-
-// Initialize page
-$(document).ready(function() {
-    // Clear any old parameters from other pages and ensure we have the right ones
-    if (window.currentHashWithParams && !window.currentHashWithParams.includes('category-products')) {
-        window.currentHashWithParams = null;
-    }
-    
-    // Check if we need to wait for parameters to be stored
-    if (!window.currentHashWithParams && window.location.hash === '#category-products') {
-        // Wait a bit longer for the hash change handler to store the params
-        setTimeout(function() {
-            loadProducts();
-        }, 200);
-    } else {
-        // Small delay to ensure everything is loaded
-        setTimeout(function() {
-            loadProducts();
-        }, 100);
-    }
-});
 
 // Listen for hash changes to reload products
 $(window).on('hashchange', function() {

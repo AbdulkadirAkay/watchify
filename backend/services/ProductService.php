@@ -27,7 +27,7 @@ class ProductService extends BaseService {
         $validator->required('price', $data['price'] ?? null);
         $validator->required('quantity', $data['quantity'] ?? null);
         $validator->required('category_id', $data['category_id'] ?? null);
-        $validator->required('image_url', $data['image_url'] ?? null);
+        // image_url is now optional
         $validator->required('description', $data['description'] ?? null);
 
         if (isset($data['name'])) {
@@ -60,10 +60,7 @@ class ProductService extends BaseService {
             }
         }
 
-        if (isset($data['image_url'])) {
-            $validator->maxLength('image_url', $data['image_url'], 255);
-            $validator->url('image_url', $data['image_url'], 'Invalid image URL format');
-        }
+        // image_url validation removed - accepts file paths, URLs, or any format
 
         if (isset($data['description'])) {
             $validator->maxLength('description', $data['description'], 500);
@@ -122,10 +119,7 @@ class ProductService extends BaseService {
             }
         }
 
-        if (isset($data['image_url'])) {
-            $validator->maxLength('image_url', $data['image_url'], 255);
-            $validator->url('image_url', $data['image_url'], 'Invalid image URL format');
-        }
+        // image_url validation removed - accepts file paths, URLs, or any format
 
         if (isset($data['description'])) {
             $validator->maxLength('description', $data['description'], 500);
@@ -258,6 +252,25 @@ class ProductService extends BaseService {
             return [
                 'success' => false,
                 'message' => 'Failed to retrieve products: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    /**
+     * Get unique brands
+     */
+    public function getUniqueBrands() {
+        try {
+            $brands = $this->dao->getUniqueBrands();
+            
+            return [
+                'success' => true,
+                'data' => $brands
+            ];
+        } catch (Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'Failed to retrieve brands: ' . $e->getMessage()
             ];
         }
     }

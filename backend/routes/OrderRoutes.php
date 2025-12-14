@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/../middleware/AuthMiddleware.php';
+require_once __DIR__ . '/../data/Roles.php';
 
 /**
  * @OA\Tag(
@@ -17,6 +19,7 @@ class OrderRoutes {
          *     tags={"Orders"},
          *     summary="Get all orders with user info",
          *     description="Retrieve all orders with associated user information",
+         *     security={{"ApiKey":{}}},
          *     @OA\Response(
          *         response=200,
          *         description="List of orders with user details",
@@ -30,6 +33,9 @@ class OrderRoutes {
          * )
          */
         Flight::route('GET /api/orders', function() {
+            // Only admins can see all orders
+            AuthMiddleware::authorizeRole(Roles::ADMIN);
+
             $service = Flight::orderService();
             $result = $service->getOrdersWithUserInfo();
             Flight::json($result, $result['success'] ? 200 : 400);
@@ -41,6 +47,7 @@ class OrderRoutes {
          *     tags={"Orders"},
          *     summary="Get order by ID",
          *     description="Retrieve a specific order by ID",
+         *     security={{"ApiKey":{}}},
          *     @OA\Parameter(
          *         name="id",
          *         in="path",
@@ -64,6 +71,12 @@ class OrderRoutes {
         Flight::route('GET /api/orders/@id', function($id) {
             $service = Flight::orderService();
             $result = $service->getById($id);
+
+            if ($result['success'] && isset($result['data']['user_id'])) {
+                // Admin can see any order, user only their own
+                AuthMiddleware::authorizeCurrentUserOrAdmin($result['data']['user_id']);
+            }
+
             Flight::json($result, $result['success'] ? 200 : ($result['message'] === 'Record not found' ? 404 : 400));
         });
 
@@ -73,6 +86,7 @@ class OrderRoutes {
          *     tags={"Orders"},
          *     summary="Get orders by user ID",
          *     description="Retrieve all orders for a specific user",
+         *     security={{"ApiKey":{}}},
          *     @OA\Parameter(
          *         name="user_id",
          *         in="path",
@@ -93,6 +107,9 @@ class OrderRoutes {
          * )
          */
         Flight::route('GET /api/orders/user/@user_id', function($user_id) {
+            // Admin can view any user's orders; regular users only their own
+            AuthMiddleware::authorizeCurrentUserOrAdmin($user_id);
+
             $service = Flight::orderService();
             $result = $service->getByUserId($user_id);
             Flight::json($result, $result['success'] ? 200 : 400);
@@ -104,6 +121,7 @@ class OrderRoutes {
          *     tags={"Orders"},
          *     summary="Get orders by status",
          *     description="Retrieve all orders with a specific status",
+         *     security={{"ApiKey":{}}},
          *     @OA\Parameter(
          *         name="status",
          *         in="path",
@@ -124,6 +142,9 @@ class OrderRoutes {
          * )
          */
         Flight::route('GET /api/orders/status/@status', function($status) {
+            // Only admins should filter orders by status globally
+            AuthMiddleware::authorizeRole(Roles::ADMIN);
+
             $service = Flight::orderService();
             $result = $service->getByStatus($status);
             Flight::json($result, $result['success'] ? 200 : 400);
@@ -135,6 +156,7 @@ class OrderRoutes {
          *     tags={"Orders"},
          *     summary="Get orders by date range",
          *     description="Retrieve orders within a specific date range",
+         *     security={{"ApiKey":{}}},
          *     @OA\Parameter(
          *         name="start_date",
          *         in="query",
@@ -162,6 +184,9 @@ class OrderRoutes {
          * )
          */
         Flight::route('GET /api/orders/date-range', function() {
+            // Only admins can query arbitrary date ranges
+            AuthMiddleware::authorizeRole(Roles::ADMIN);
+
             $service = Flight::orderService();
             $start_date = Flight::request()->query['start_date'] ?? null;
             $end_date = Flight::request()->query['end_date'] ?? null;
@@ -175,6 +200,7 @@ class OrderRoutes {
          *     tags={"Orders"},
          *     summary="Create a new order",
          *     description="Create a new order with products. Automatically decreases product quantities.",
+         *     security={{"ApiKey":{}}},
          *     @OA\RequestBody(
          *         required=true,
          *         @OA\JsonContent(
@@ -214,6 +240,13 @@ class OrderRoutes {
         Flight::route('POST /api/orders', function() {
             $service = Flight::orderService();
             $data = Flight::request()->data->getData();
+
+            // Regular users can only create orders for themselves; admins can override user_id
+            $currentUser = Flight::get('user');
+            if ($currentUser && isset($currentUser->role) && $currentUser->role === Roles::USER) {
+                $data['user_id'] = $currentUser->id ?? null;
+            }
+
             $result = $service->create($data);
             Flight::json($result, $result['success'] ? 201 : 400);
         });
@@ -224,6 +257,7 @@ class OrderRoutes {
          *     tags={"Orders"},
          *     summary="Update order",
          *     description="Update order information",
+         *     security={{"ApiKey":{}}},
          *     @OA\Parameter(
          *         name="id",
          *         in="path",
@@ -251,6 +285,9 @@ class OrderRoutes {
          * )
          */
         Flight::route('PUT /api/orders/@id', function($id) {
+            // Only admins can update orders
+            AuthMiddleware::authorizeRole(Roles::ADMIN);
+
             $service = Flight::orderService();
             $data = Flight::request()->data->getData();
             $result = $service->update($id, $data);
@@ -263,6 +300,7 @@ class OrderRoutes {
          *     tags={"Orders"},
          *     summary="Update order status",
          *     description="Update the status of an order",
+         *     security={{"ApiKey":{}}},
          *     @OA\Parameter(
          *         name="id",
          *         in="path",
@@ -287,6 +325,9 @@ class OrderRoutes {
          * )
          */
         Flight::route('PATCH /api/orders/@id/status', function($id) {
+            // Only admins can change order status
+            AuthMiddleware::authorizeRole(Roles::ADMIN);
+
             $service = Flight::orderService();
             $data = Flight::request()->data->getData();
             $status = $data['status'] ?? null;
@@ -300,6 +341,7 @@ class OrderRoutes {
          *     tags={"Orders"},
          *     summary="Delete order",
          *     description="Delete an order by ID",
+         *     security={{"ApiKey":{}}},
          *     @OA\Parameter(
          *         name="id",
          *         in="path",
@@ -317,6 +359,9 @@ class OrderRoutes {
          * )
          */
         Flight::route('DELETE /api/orders/@id', function($id) {
+            // Only admins can delete orders
+            AuthMiddleware::authorizeRole(Roles::ADMIN);
+
             $service = Flight::orderService();
             $result = $service->delete($id);
             Flight::json($result, $result['success'] ? 200 : 400);

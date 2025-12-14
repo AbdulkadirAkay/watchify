@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/../middleware/AuthMiddleware.php';
+require_once __DIR__ . '/../data/Roles.php';
 
 /**
  * @OA\Tag(
@@ -17,6 +19,7 @@ class ProductRoutes {
          *     tags={"Products"},
          *     summary="Get all products",
          *     description="Retrieve a list of all products",
+         *     security={{"ApiKey":{}}},
          *     @OA\Response(
          *         response=200,
          *         description="List of products",
@@ -37,42 +40,11 @@ class ProductRoutes {
 
         /**
          * @OA\Get(
-         *     path="/api/products/{id}",
-         *     tags={"Products"},
-         *     summary="Get product by ID",
-         *     description="Retrieve a specific product by ID",
-         *     @OA\Parameter(
-         *         name="id",
-         *         in="path",
-         *         required=true,
-         *         description="Product ID",
-         *         @OA\Schema(type="integer")
-         *     ),
-         *     @OA\Response(
-         *         response=200,
-         *         description="Product details",
-         *         @OA\JsonContent(
-         *             type="object",
-         *             @OA\Property(property="success", type="boolean", example=true),
-         *             @OA\Property(property="data", ref="#/components/schemas/Product")
-         *         )
-         *     ),
-         *     @OA\Response(response=404, description="Product not found", @OA\JsonContent(ref="#/components/schemas/Error")),
-         *     @OA\Response(response=400, description="Bad request", @OA\JsonContent(ref="#/components/schemas/Error"))
-         * )
-         */
-        Flight::route('GET /api/products/@id', function($id) {
-            $service = Flight::productService();
-            $result = $service->getById($id);
-            Flight::json($result, $result['success'] ? 200 : ($result['message'] === 'Record not found' ? 404 : 400));
-        });
-
-        /**
-         * @OA\Get(
          *     path="/api/products/category/{category_id}",
          *     tags={"Products"},
          *     summary="Get products by category",
          *     description="Retrieve all products in a specific category",
+         *     security={{"ApiKey":{}}},
          *     @OA\Parameter(
          *         name="category_id",
          *         in="path",
@@ -104,6 +76,7 @@ class ProductRoutes {
          *     tags={"Products"},
          *     summary="Get products by brand",
          *     description="Retrieve all products from a specific brand",
+         *     security={{"ApiKey":{}}},
          *     @OA\Parameter(
          *         name="brand",
          *         in="path",
@@ -135,6 +108,7 @@ class ProductRoutes {
          *     tags={"Products"},
          *     summary="Get available products",
          *     description="Retrieve all products with quantity > 0",
+         *     security={{"ApiKey":{}}},
          *     @OA\Response(
          *         response=200,
          *         description="List of available products",
@@ -155,10 +129,43 @@ class ProductRoutes {
 
         /**
          * @OA\Get(
+         *     path="/api/products/brands",
+         *     tags={"Products"},
+         *     summary="Get all unique brands",
+         *     description="Retrieve a list of all unique brand names from products",
+         *     security={{"ApiKey":{}}},
+         *     @OA\Response(
+         *         response=200,
+         *         description="List of unique brands",
+         *         @OA\JsonContent(
+         *             type="object",
+         *             @OA\Property(property="success", type="boolean", example=true),
+         *             @OA\Property(
+         *                 property="data",
+         *                 type="array",
+         *                 @OA\Items(
+         *                     type="object",
+         *                     @OA\Property(property="brand", type="string", example="Rolex")
+         *                 )
+         *             )
+         *         )
+         *     ),
+         *     @OA\Response(response=400, description="Bad request", @OA\JsonContent(ref="#/components/schemas/Error"))
+         * )
+         */
+        Flight::route('GET /api/products/brands', function() {
+            $service = Flight::productService();
+            $result = $service->getUniqueBrands();
+            Flight::json($result, $result['success'] ? 200 : 400);
+        });
+
+        /**
+         * @OA\Get(
          *     path="/api/products/popular",
          *     tags={"Products"},
          *     summary="Get popular products",
          *     description="Retrieve most popular products based on order quantity",
+         *     security={{"ApiKey":{}}},
          *     @OA\Parameter(
          *         name="limit",
          *         in="query",
@@ -191,6 +198,7 @@ class ProductRoutes {
          *     tags={"Products"},
          *     summary="Get new arrivals",
          *     description="Retrieve recently added products",
+         *     security={{"ApiKey":{}}},
          *     @OA\Parameter(
          *         name="limit",
          *         in="query",
@@ -218,11 +226,45 @@ class ProductRoutes {
         });
 
         /**
+         * @OA\Get(
+         *     path="/api/products/{id}",
+         *     tags={"Products"},
+         *     summary="Get product by ID",
+         *     description="Retrieve a specific product by ID",
+         *     security={{"ApiKey":{}}},
+         *     @OA\Parameter(
+         *         name="id",
+         *         in="path",
+         *         required=true,
+         *         description="Product ID",
+         *         @OA\Schema(type="integer")
+         *     ),
+         *     @OA\Response(
+         *         response=200,
+         *         description="Product details",
+         *         @OA\JsonContent(
+         *             type="object",
+         *             @OA\Property(property="success", type="boolean", example=true),
+         *             @OA\Property(property="data", ref="#/components/schemas/Product")
+         *         )
+         *     ),
+         *     @OA\Response(response=404, description="Product not found", @OA\JsonContent(ref="#/components/schemas/Error")),
+         *     @OA\Response(response=400, description="Bad request", @OA\JsonContent(ref="#/components/schemas/Error"))
+         * )
+         */
+        Flight::route('GET /api/products/@id', function($id) {
+            $service = Flight::productService();
+            $result = $service->getById($id);
+            Flight::json($result, $result['success'] ? 200 : ($result['message'] === 'Record not found' ? 404 : 400));
+        });
+
+        /**
          * @OA\Post(
          *     path="/api/products",
          *     tags={"Products"},
          *     summary="Create a new product",
          *     description="Add a new product to the catalog",
+         *     security={{"ApiKey":{}}},
          *     @OA\RequestBody(
          *         required=true,
          *         @OA\JsonContent(
@@ -250,6 +292,9 @@ class ProductRoutes {
          * )
          */
         Flight::route('POST /api/products', function() {
+            // Only admins can create products
+            AuthMiddleware::authorizeRole(Roles::ADMIN);
+
             $service = Flight::productService();
             $data = Flight::request()->data->getData();
             $result = $service->create($data);
@@ -262,6 +307,7 @@ class ProductRoutes {
          *     tags={"Products"},
          *     summary="Update product",
          *     description="Update product information",
+         *     security={{"ApiKey":{}}},
          *     @OA\Parameter(
          *         name="id",
          *         in="path",
@@ -291,6 +337,9 @@ class ProductRoutes {
          * )
          */
         Flight::route('PUT /api/products/@id', function($id) {
+            // Only admins can update products
+            AuthMiddleware::authorizeRole(Roles::ADMIN);
+
             $service = Flight::productService();
             $data = Flight::request()->data->getData();
             $result = $service->update($id, $data);
@@ -303,6 +352,7 @@ class ProductRoutes {
          *     tags={"Products"},
          *     summary="Update product quantity",
          *     description="Update the stock quantity of a product",
+         *     security={{"ApiKey":{}}},
          *     @OA\Parameter(
          *         name="id",
          *         in="path",
@@ -327,6 +377,9 @@ class ProductRoutes {
          * )
          */
         Flight::route('PATCH /api/products/@id/quantity', function($id) {
+            // Only admins can adjust stock quantities
+            AuthMiddleware::authorizeRole(Roles::ADMIN);
+
             $service = Flight::productService();
             $data = Flight::request()->data->getData();
             $quantity = $data['quantity'] ?? null;
@@ -340,6 +393,7 @@ class ProductRoutes {
          *     tags={"Products"},
          *     summary="Delete product",
          *     description="Delete a product by ID",
+         *     security={{"ApiKey":{}}},
          *     @OA\Parameter(
          *         name="id",
          *         in="path",
@@ -357,6 +411,9 @@ class ProductRoutes {
          * )
          */
         Flight::route('DELETE /api/products/@id', function($id) {
+            // Only admins can delete products
+            AuthMiddleware::authorizeRole(Roles::ADMIN);
+
             $service = Flight::productService();
             $result = $service->delete($id);
             Flight::json($result, $result['success'] ? 200 : 400);

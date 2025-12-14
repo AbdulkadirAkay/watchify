@@ -4,7 +4,97 @@ var app = $.spapp({
 
 });
 
-// Hide/show navigation and footer based on current page
+
+app.route({
+    view: 'category-products',
+    onReady: function(params) {
+        console.log('Category products route ready with params:', params);
+        if (typeof initCategoryProducts === 'function') {
+            initCategoryProducts(params);
+        }
+    }
+});
+
+
+app.route({
+    view: 'brand-products',
+    onReady: function(params) {
+        console.log('Brand products route ready with params:', params);
+        if (typeof initBrandProducts === 'function') {
+            initBrandProducts(params);
+        }
+    }
+});
+
+
+app.route({
+    view: 'admin',
+    onReady: function(params) {
+        console.log('Admin route ready');
+        if (typeof AdminService !== 'undefined' && AdminService.init) {
+            AdminService.init();
+        }
+    }
+});
+
+
+function updateAuthButtons() {
+    const token = localStorage.getItem("user_token");
+    const loggedIn = !!token;
+
+    const $loginBtn = $("#loginBtn");
+    const $logoutBtn = $("#logoutBtn");
+    const $profileBtn = $("#profileBtn");
+    const $adminBtn = $("#adminBtn");
+
+    if (loggedIn) {
+        const payload = Utils.parseJwt(token);
+        const user = payload ? payload.user : null;
+
+        $loginBtn.addClass("d-none");
+        $logoutBtn.removeClass("d-none");
+        $profileBtn.removeClass("d-none");
+
+
+        if (user && user.role === Constants.ADMIN_ROLE) {
+            $adminBtn.removeClass("d-none");
+        } else {
+            $adminBtn.addClass("d-none");
+        }
+    } else {
+        $loginBtn.removeClass("d-none");
+        $logoutBtn.addClass("d-none");
+        $profileBtn.addClass("d-none");
+        $adminBtn.addClass("d-none");
+    }
+    
+
+    updateFooterVisibility(loggedIn);
+}
+
+
+function updateFooterVisibility(loggedIn) {
+    const $footerCustomerService = $("#footerCustomerService");
+    const $footerMyAccount = $("#footerMyAccount");
+    const $footerShoppingCart = $("#footerShoppingCart");
+    const $footerOrderHistory = $("#footerOrderHistory");
+    
+    if (loggedIn) {
+
+        $footerCustomerService.show();
+        $footerMyAccount.show();
+        $footerShoppingCart.show();
+        $footerOrderHistory.show();
+    } else {
+        
+        $footerCustomerService.hide();
+        $footerMyAccount.hide();
+        $footerShoppingCart.hide();
+        $footerOrderHistory.hide();
+    }
+}
+
+
 function toggleNavigation(show) {
     const navbar = $('.navbar');
     const footer = $('footer');
@@ -18,111 +108,68 @@ function toggleNavigation(show) {
     }
 }
 
-// Check current page on load and navigation
+
 function checkCurrentPage() {
     const currentHash = window.location.hash;
     
-    if (currentHash === '#login' || currentHash === '#register' || currentHash === '#order-success') {
+    const baseRoute = currentHash.split('?')[0];
+    
+    if (baseRoute === '#login' || baseRoute === '#register' || baseRoute === '#order-success' || baseRoute === '#admin') {
         toggleNavigation(false);
     } else {
         toggleNavigation(true);
     }
+
+    
+    updateAuthButtons();
 }
 
-// Listen for hash changes
+
 $(window).on('hashchange', function() {
-    // Handle empty hash or just "#" to show home page
+    
     const currentHash = window.location.hash;
     if (!currentHash || currentHash === '#') {
         window.location.hash = '#home';
         return;
     }
     
-    // Handle category-products and brand-products with query parameters
-    if (currentHash.includes('category-products?id=') || currentHash.includes('brand-products?id=')) {
-        // Store the full hash with parameters BEFORE redirecting
-        // Always update the stored params for the current page type
-        window.currentHashWithParams = currentHash;
-        
-        // Extract the base route and redirect to it
-        const baseRoute = currentHash.split('?')[0];
-        window.location.hash = baseRoute;
-        return;
-    }
-    
-    // Store the full hash with parameters for pages that need it
-    // Only store if we don't already have parameters stored (to avoid overwriting)
-    if (!window.currentHashWithParams || !window.currentHashWithParams.includes('?')) {
-        window.currentHashWithParams = currentHash;
-    }
+
     
     checkCurrentPage();
+    
+    
+    if (typeof CartService !== "undefined" && CartService.updateCartBadge) {
+        CartService.updateCartBadge();
+    }
 });
 
-// Check on initial load
+
 $(document).ready(function() {
-    // Handle empty hash or just "#" to show home page
+    
     const currentHash = window.location.hash;
     if (!currentHash || currentHash === '#') {
         window.location.hash = '#home';
         return;
     }
     
-    // Handle category-products and brand-products with query parameters on initial load
-    if (currentHash.includes('category-products?id=') || currentHash.includes('brand-products?id=')) {
-        // Store the full hash with parameters BEFORE redirecting
-        // Always update the stored params for the current page type
-        window.currentHashWithParams = currentHash;
-        
-        // Extract the base route and redirect to it
-        const baseRoute = currentHash.split('?')[0];
-        window.location.hash = baseRoute;
-        return;
-    }
-    
-    // Store the full hash with parameters
-    // Only store if we don't already have parameters stored (to avoid overwriting)
-    if (!window.currentHashWithParams || !window.currentHashWithParams.includes('?')) {
-        window.currentHashWithParams = currentHash;
-    }
-    
     checkCurrentPage();
-});
-
-// Handle login form submission
-$(document).on('submit', '#loginForm', function(e) {
-    e.preventDefault();
     
-    const email = $('#email').val();
-    const password = $('#password').val();
+    updateAuthButtons();
     
-    // Basic validation
-    if (!email || !password) {
-        alert('Please fill in all fields');
-        return;
+    
+    if (typeof CartService !== "undefined" && CartService.init) {
+        CartService.init();
     }
-    
-    // Here you would typically send the data to your backend
-    
-    
-    window.location.hash = '#home';
-    
-    // Clear the form
-    this.reset();
 });
 
-// Handle registration form submission
+
 $(document).on('submit', '#registerForm', function(e) {
     e.preventDefault();
     
-    const firstName = $('#firstName').val();
-    const lastName = $('#lastName').val();
-    const email = $('#email').val();
-    const phone = $('#phone').val();
-    const password = $('#password').val();
-    const confirmPassword = $('#confirmPassword').val();
+    const entity = Object.fromEntries(new FormData(e.target).entries());
+    const { firstName, lastName, email, phone, password, confirmPassword } = entity;
     
-    // Basic validation
+    
     if (!firstName || !lastName || !email || !phone || !password || !confirmPassword) {
         alert('Please fill in all fields');
         return;
@@ -133,14 +180,8 @@ $(document).on('submit', '#registerForm', function(e) {
         return;
     }
     
-    // Here you would typically send the data to your backend
     
-    // For demo purposes, show success message and redirect to login
-    alert('Registration successful! Please login with your credentials.');
-    window.location.hash = '#login';
-    
-    // Clear the form
-    this.reset();
+    UserService.register(entity);
 });
 
 app.run();

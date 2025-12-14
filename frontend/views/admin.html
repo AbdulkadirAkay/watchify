@@ -325,25 +325,25 @@
             <p>Watchify Management</p>
         </div>
         <nav class="nav flex-column">
-            <a class="nav-link active" href="#admin" onclick="showAdminSection('dashboard')">
+            <a class="nav-link active" href="javascript:void(0);" onclick="showAdminSection('dashboard')">
                 <i class="bi-speedometer2"></i>
                 Dashboard
             </a>
-            <a class="nav-link" href="#admin" onclick="showAdminSection('products')">
+            <a class="nav-link" href="javascript:void(0);" onclick="showAdminSection('products')">
                 <i class="bi-box"></i>
                 Manage Products
             </a>
-            <a class="nav-link" href="#admin" onclick="showAdminSection('orders')">
+            <a class="nav-link" href="javascript:void(0);" onclick="showAdminSection('orders')">
                 <i class="bi-receipt"></i>
                 Manage Orders
             </a>
-            <a class="nav-link" href="#admin" onclick="showAdminSection('customers')">
+            <a class="nav-link" href="javascript:void(0);" onclick="showAdminSection('customers')">
                 <i class="bi-people"></i>
                 Customers
             </a>
-            <a class="nav-link" href="#admin" onclick="showAdminSection('settings')">
-                <i class="bi-gear"></i>
-                Settings
+            <a class="nav-link" href="javascript:void(0);" onclick="window.location.hash = '#home'">
+                <i class="bi-house"></i>
+                Back to Store
             </a>
         </nav>
     </div>
@@ -512,53 +512,6 @@
                 </div>
             </div>
         </div>
-        
-        <!-- Settings Section -->
-        <div id="settings" class="admin-section">
-            <div class="admin-header">
-                <h2><i class="bi-gear me-2"></i>Settings</h2>
-            </div>
-            
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="data-table">
-                        <div class="table-header">
-                            <h5>General Settings</h5>
-                        </div>
-                        <div class="p-3">
-                            <form>
-                                <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" id="storeName" value="Watchify">
-                                    <label for="storeName">Store Name</label>
-                                </div>
-                                <div class="form-floating mb-3">
-                                    <input type="email" class="form-control" id="storeEmail" value="admin@watchify.com">
-                                    <label for="storeEmail">Store Email</label>
-                                </div>
-                                <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" id="storePhone" value="+387 61 123 456">
-                                    <label for="storePhone">Store Phone</label>
-                                </div>
-                                <button type="submit" class="btn btn-add">Save Settings</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="data-table">
-                        <div class="table-header">
-                            <h5>System Information</h5>
-                        </div>
-                        <div class="p-3">
-                            <p><strong>Version:</strong> 1.0.0</p>
-                            <p><strong>Last Updated:</strong> March 2024</p>
-                            <p><strong>Database:</strong> MySQL 8.0</p>
-                            <p><strong>Server:</strong> Apache 2.4</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 
@@ -613,9 +566,21 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="form-floating">
-                                <input type="url" class="form-control" id="productImage">
-                                <label for="productImage">Image URL</label>
+                            <div class="mb-3">
+                                <label for="productImage" class="form-label">Product Image</label>
+                                <input type="file" class="form-control" id="productImage" accept="image/*">
+                                <small class="text-muted">Upload an image (JPG, PNG, GIF, WEBP)</small>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Image Preview -->
+                    <div class="row" id="imagePreviewContainer" style="display: none;">
+                        <div class="col-12">
+                            <div class="text-center mb-3">
+                                <img id="imagePreview" src="" alt="Preview" style="max-width: 200px; max-height: 200px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                                <button type="button" class="btn btn-sm btn-danger d-block mx-auto mt-2" onclick="AdminService.clearImage()">
+                                    <i class="bi-trash me-1"></i>Remove Image
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -758,462 +723,8 @@
 </div>
 
 <script>
-// Sample data
-const sampleProducts = [
-    {
-        id: 1,
-        name: "Rolex Submariner",
-        brand: "Rolex",
-        category: "men",
-        price: 2500.00,
-        stock: 5,
-        image: "images/rolex.png",
-        description: "Luxury diving watch"
-    },
-    {
-        id: 2,
-        name: "Police Classic",
-        brand: "Police",
-        category: "men",
-        price: 180.00,
-        stock: 12,
-        image: "images/rolex.png",
-        description: "Classic men's watch"
-    },
-    {
-        id: 3,
-        name: "Fossil Smartwatch",
-        brand: "Fossil",
-        category: "women",
-        price: 120.00,
-        stock: 8,
-        image: "images/rolex.png",
-        description: "Smart watch for women"
-    },
-    {
-        id: 4,
-        name: "Festina Kids",
-        brand: "Festina",
-        category: "kids",
-        price: 45.00,
-        stock: 15,
-        image: "images/rolex.png",
-        description: "Colorful kids watch"
-    }
-];
-
-const sampleOrders = [
-    {
-        id: "ORD-001",
-        customer: "Ahmed Hasanović",
-        email: "ahmed@example.com",
-        phone: "+387 61 123 456",
-        products: "Rolex Submariner x1",
-        amount: 2500.00,
-        status: "delivered",
-        date: "2024-03-15",
-        shippingAddress: {
-            address: "Trg BiH 15",
-            city: "Sarajevo",
-            state: "Sarajevo Canton",
-            zip: "71000"
-        },
-        items: [
-            {
-                name: "Rolex Submariner",
-                quantity: 1,
-                price: 2500.00,
-                total: 2500.00
-            }
-        ],
-        subtotal: 2500.00,
-        shipping: 0.00,
-        tax: 0.00
-    },
-    {
-        id: "ORD-002",
-        customer: "Sara Ahmed",
-        email: "sara@example.com",
-        phone: "+387 61 789 012",
-        products: "Fossil Smartwatch x2",
-        amount: 240.00,
-        status: "shipped",
-        date: "2024-03-20",
-        shippingAddress: {
-            address: "Ulica 27. marta 8",
-            city: "Tuzla",
-            state: "Tuzla Canton",
-            zip: "75000"
-        },
-        items: [
-            {
-                name: "Fossil Smartwatch",
-                quantity: 2,
-                price: 120.00,
-                total: 240.00
-            }
-        ],
-        subtotal: 240.00,
-        shipping: 0.00,
-        tax: 0.00
-    },
-    {
-        id: "ORD-003",
-        customer: "Marko Petrović",
-        email: "marko@example.com",
-        phone: "+387 61 345 678",
-        products: "Police Classic x1",
-        amount: 180.00,
-        status: "processing",
-        date: "2024-03-25",
-        shippingAddress: {
-            address: "Kralja Petra I 12",
-            city: "Banja Luka",
-            state: "Republika Srpska",
-            zip: "78000"
-        },
-        items: [
-            {
-                name: "Police Classic",
-                quantity: 1,
-                price: 180.00,
-                total: 180.00
-            }
-        ],
-        subtotal: 180.00,
-        shipping: 0.00,
-        tax: 0.00
-    }
-];
-
-const sampleCustomers = [
-    {
-        id: 1,
-        name: "Ahmed Hasanović",
-        email: "ahmed@example.com",
-        phone: "+387 61 123 456",
-        orders: 3,
-        totalSpent: 2750.00
-    },
-    {
-        id: 2,
-        name: "Sara Ahmed",
-        email: "sara@example.com",
-        phone: "+387 61 789 012",
-        orders: 2,
-        totalSpent: 240.00
-    },
-    {
-        id: 3,
-        name: "Marko Petrović",
-        email: "marko@example.com",
-        phone: "+387 61 345 678",
-        orders: 1,
-        totalSpent: 180.00
-    }
-];
-
-// Show admin section
-function showAdminSection(sectionId) {
-    // Hide all sections
-    document.querySelectorAll('.admin-section').forEach(section => {
-        section.classList.remove('active');
-    });
-    
-    // Remove active class from all nav links
-    document.querySelectorAll('.admin-sidebar .nav-link').forEach(link => {
-        link.classList.remove('active');
-    });
-    
-    // Show selected section
-    document.getElementById(sectionId).classList.add('active');
-    
-    // Add active class to clicked nav link
-    event.target.classList.add('active');
-    
-    // Load section data
-    loadSectionData(sectionId);
-}
-
-// Load data for specific section
-function loadSectionData(sectionId) {
-    switch(sectionId) {
-        case 'dashboard':
-            loadDashboardData();
-            break;
-        case 'products':
-            loadProductsData();
-            break;
-        case 'orders':
-            loadOrdersData();
-            break;
-        case 'customers':
-            loadCustomersData();
-            break;
-    }
-}
-
-// Load dashboard data
-function loadDashboardData() {
-    // Update stats
-    document.getElementById('totalProducts').textContent = sampleProducts.length;
-    document.getElementById('totalOrders').textContent = sampleOrders.length;
-    document.getElementById('totalRevenue').textContent = '$' + sampleOrders.reduce((sum, order) => sum + order.amount, 0).toLocaleString();
-    document.getElementById('totalCustomers').textContent = sampleCustomers.length;
-    
-    // Load recent orders
-    const recentOrdersTable = document.getElementById('recentOrdersTable');
-    recentOrdersTable.innerHTML = '';
-    
-    sampleOrders.slice(0, 5).forEach(order => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${order.id}</td>
-            <td>${order.customer}</td>
-            <td>$${order.amount.toFixed(2)}</td>
-            <td><span class="status-badge status-${order.status}">${order.status.charAt(0).toUpperCase() + order.status.slice(1)}</span></td>
-            <td>${order.date}</td>
-            <td>
-                <button class="btn btn-action btn-view" onclick="viewOrder('${order.id}')">
-                    <i class="bi-eye"></i>
-                </button>
-            </td>
-        `;
-        recentOrdersTable.appendChild(row);
-    });
-}
-
-// Load products data
-function loadProductsData() {
-    const productsTable = document.getElementById('productsTable');
-    productsTable.innerHTML = '';
-    
-    sampleProducts.forEach(product => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td><img src="${product.image}" alt="${product.name}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;"></td>
-            <td>${product.name}</td>
-            <td>${product.category.charAt(0).toUpperCase() + product.category.slice(1)}</td>
-            <td>${product.brand}</td>
-            <td>$${product.price.toFixed(2)}</td>
-            <td>${product.stock}</td>
-            <td><span class="status-badge ${product.stock > 0 ? 'status-delivered' : 'status-cancelled'}">${product.stock > 0 ? 'In Stock' : 'Out of Stock'}</span></td>
-            <td>
-                <button class="btn btn-action btn-edit" onclick="editProduct(${product.id})">
-                    <i class="bi-pencil"></i>
-                </button>
-                <button class="btn btn-action btn-delete" onclick="deleteProduct(${product.id})">
-                    <i class="bi-trash"></i>
-                </button>
-            </td>
-        `;
-        productsTable.appendChild(row);
-    });
-}
-
-// Load orders data
-function loadOrdersData() {
-    const ordersTable = document.getElementById('ordersTable');
-    ordersTable.innerHTML = '';
-    
-    sampleOrders.forEach(order => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${order.id}</td>
-            <td>${order.customer}</td>
-            <td>${order.products}</td>
-            <td>$${order.amount.toFixed(2)}</td>
-            <td><span class="status-badge status-${order.status}">${order.status.charAt(0).toUpperCase() + order.status.slice(1)}</span></td>
-            <td>${order.date}</td>
-            <td>
-                <button class="btn btn-action btn-view" onclick="viewOrder('${order.id}')">
-                    <i class="bi-eye"></i>
-                </button>
-                <button class="btn btn-action btn-edit" onclick="updateOrderStatus('${order.id}')">
-                    <i class="bi-pencil"></i>
-                </button>
-            </td>
-        `;
-        ordersTable.appendChild(row);
-    });
-}
-
-// Load customers data
-function loadCustomersData() {
-    const customersTable = document.getElementById('customersTable');
-    customersTable.innerHTML = '';
-    
-    sampleCustomers.forEach(customer => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${customer.id}</td>
-            <td>${customer.name}</td>
-            <td>${customer.email}</td>
-            <td>${customer.phone}</td>
-            <td>${customer.orders}</td>
-            <td>$${customer.totalSpent.toFixed(2)}</td>
-            <td>
-                <button class="btn btn-action btn-view" onclick="viewCustomer(${customer.id})">
-                    <i class="bi-eye"></i>
-                </button>
-            </td>
-        `;
-        customersTable.appendChild(row);
-    });
-}
-
-// Product management functions
-function showProductModal(productId = null) {
-    const modal = new bootstrap.Modal(document.getElementById('productModal'));
-    const modalTitle = document.getElementById('productModalTitle');
-    const form = document.getElementById('productForm');
-    
-    if (productId) {
-        modalTitle.textContent = 'Edit Product';
-        // Load product data for editing
-        const product = sampleProducts.find(p => p.id === productId);
-        if (product) {
-            document.getElementById('productName').value = product.name;
-            document.getElementById('productBrand').value = product.brand;
-            document.getElementById('productCategory').value = product.category;
-            document.getElementById('productPrice').value = product.price;
-            document.getElementById('productStock').value = product.stock;
-            document.getElementById('productImage').value = product.image;
-            document.getElementById('productDescription').value = product.description;
-        }
-    } else {
-        modalTitle.textContent = 'Add Product';
-        form.reset();
-    }
-    
-    modal.show();
-}
-
-function saveProduct() {
-    // Here you would typically save the product to your backend
-    alert('Product saved successfully!');
-    bootstrap.Modal.getInstance(document.getElementById('productModal')).hide();
-    loadProductsData();
-}
-
-function editProduct(productId) {
-    showProductModal(productId);
-}
-
-function deleteProduct(productId) {
-    if (confirm('Are you sure you want to delete this product?')) {
-        // Here you would typically delete the product from your backend
-        alert('Product deleted successfully!');
-        loadProductsData();
-    }
-}
-
-// Order management functions
-let currentOrderId = null;
-
-function viewOrder(orderId) {
-    currentOrderId = orderId;
-    const order = sampleOrders.find(o => o.id === orderId);
-    
-    if (order) {
-        // Populate order details
-        document.getElementById('orderId').textContent = order.id;
-        document.getElementById('orderDate').textContent = order.date;
-        document.getElementById('orderAmount').textContent = '$' + order.amount.toFixed(2);
-        document.getElementById('customerName').textContent = order.customer;
-        document.getElementById('customerEmail').textContent = order.email;
-        document.getElementById('customerPhone').textContent = order.phone;
-        
-        // Update status badge
-        const statusElement = document.getElementById('orderStatus');
-        statusElement.textContent = order.status.charAt(0).toUpperCase() + order.status.slice(1);
-        statusElement.className = 'status-badge status-' + order.status;
-        
-        // Populate shipping address
-        document.getElementById('shippingAddress').textContent = order.shippingAddress.address;
-        document.getElementById('shippingCity').textContent = order.shippingAddress.city;
-        document.getElementById('shippingState').textContent = order.shippingAddress.state;
-        document.getElementById('shippingZip').textContent = order.shippingAddress.zip;
-        
-        // Populate order items
-        const itemsTable = document.getElementById('orderItemsTable');
-        itemsTable.innerHTML = '';
-        order.items.forEach(item => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${item.name}</td>
-                <td>${item.quantity}</td>
-                <td>$${item.price.toFixed(2)}</td>
-                <td>$${item.total.toFixed(2)}</td>
-            `;
-            itemsTable.appendChild(row);
-        });
-        
-        // Populate totals
-        document.getElementById('orderSubtotal').textContent = '$' + order.subtotal.toFixed(2);
-        document.getElementById('orderShipping').textContent = '$' + order.shipping.toFixed(2);
-        document.getElementById('orderTax').textContent = '$' + order.tax.toFixed(2);
-        document.getElementById('orderTotal').textContent = '$' + order.amount.toFixed(2);
-        
-        // Show modal
-        const modal = new bootstrap.Modal(document.getElementById('orderModal'));
-        modal.show();
-    }
-}
-
-function showStatusModal() {
-    const order = sampleOrders.find(o => o.id === currentOrderId);
-    if (order) {
-        // Set current status as selected
-        document.getElementById('newStatus').value = order.status;
-        document.getElementById('statusNote').value = '';
-        
-        // Show status modal
-        const modal = new bootstrap.Modal(document.getElementById('statusModal'));
-        modal.show();
-    }
-}
-
-function updateOrderStatus() {
-    const newStatus = document.getElementById('newStatus').value;
-    const statusNote = document.getElementById('statusNote').value;
-    
-    if (!newStatus) {
-        alert('Please select a new status');
-        return;
-    }
-    
-    // Find and update the order
-    const orderIndex = sampleOrders.findIndex(o => o.id === currentOrderId);
-    if (orderIndex !== -1) {
-        sampleOrders[orderIndex].status = newStatus;
-        
-        // Here you would typically send the update to your backend
-        console.log('Order status updated:', {
-            orderId: currentOrderId,
-            newStatus: newStatus,
-            note: statusNote
-        });
-        
-        alert('Order status updated successfully!');
-        
-        // Close modals
-        bootstrap.Modal.getInstance(document.getElementById('statusModal')).hide();
-        bootstrap.Modal.getInstance(document.getElementById('orderModal')).hide();
-        
-        // Refresh orders data
-        loadOrdersData();
-        loadDashboardData();
-    }
-}
-
-// Customer management functions
-function viewCustomer(customerId) {
-    alert(`Viewing customer: ${customerId}`);
-}
-
 // Initialize admin page
 $(document).ready(function() {
-    loadDashboardData();
+    AdminService.init();
 });
 </script>
