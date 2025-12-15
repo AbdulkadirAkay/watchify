@@ -32,6 +32,29 @@ class UserService extends BaseService {
             $validator->maxLength('name', $data['name'], 100);
         }
         
+        // Optional separate last name
+        if (isset($data['last_name'])) {
+            $validator->minLength('last_name', $data['last_name'], 2);
+            $validator->maxLength('last_name', $data['last_name'], 100);
+        }
+
+        // Optional profile fields
+        if (isset($data['phone'])) {
+            $validator->maxLength('phone', $data['phone'], 50);
+        }
+
+        if (isset($data['address'])) {
+            $validator->maxLength('address', $data['address'], 255);
+        }
+
+        if (isset($data['city'])) {
+            $validator->maxLength('city', $data['city'], 100);
+        }
+
+        if (isset($data['zip_code'])) {
+            $validator->maxLength('zip_code', $data['zip_code'], 20);
+        }
+        
         if (isset($data['password'])) {
             $validator->minLength('password', $data['password'], 6, 'Password must be at least 6 characters');
         }
@@ -93,6 +116,29 @@ class UserService extends BaseService {
             $validator->minLength('name', $data['name'], 2);
             $validator->maxLength('name', $data['name'], 100);
         }
+
+        // Optional separate last name
+        if (isset($data['last_name'])) {
+            $validator->minLength('last_name', $data['last_name'], 2);
+            $validator->maxLength('last_name', $data['last_name'], 100);
+        }
+
+        // Optional profile fields
+        if (isset($data['phone'])) {
+            $validator->maxLength('phone', $data['phone'], 50);
+        }
+
+        if (isset($data['address'])) {
+            $validator->maxLength('address', $data['address'], 255);
+        }
+
+        if (isset($data['city'])) {
+            $validator->maxLength('city', $data['city'], 100);
+        }
+
+        if (isset($data['zip_code'])) {
+            $validator->maxLength('zip_code', $data['zip_code'], 20);
+        }
         
         if (isset($data['password'])) {
             $validator->minLength('password', $data['password'], 6, 'Password must be at least 6 characters');
@@ -145,6 +191,36 @@ class UserService extends BaseService {
                 'message' => 'Failed to retrieve user: ' . $e->getMessage()
             ];
         }
+    }
+
+    /**
+     * Get user by ID (override parent to exclude password)
+     */
+    public function getById($id) {
+        $result = parent::getById($id);
+        
+        if ($result['success'] && isset($result['data']['password'])) {
+            unset($result['data']['password']);
+        }
+        
+        return $result;
+    }
+
+    /**
+     * Get all users (override parent to exclude passwords)
+     */
+    public function getAll() {
+        $result = parent::getAll();
+        
+        if ($result['success'] && is_array($result['data'])) {
+            foreach ($result['data'] as &$user) {
+                if (isset($user['password'])) {
+                    unset($user['password']);
+                }
+            }
+        }
+        
+        return $result;
     }
 
     /**

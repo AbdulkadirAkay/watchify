@@ -117,24 +117,24 @@
                         <div class="mb-3">
                             <i class="bi-person-circle display-1 text-primary"></i>
                         </div>
-                        <h5 class="mb-1">John Doe</h5>
-                        <p class="text-muted mb-0">john.doe@example.com</p>
+                        <h5 class="mb-1" id="profileName">John Doe</h5>
+                        <p class="text-muted mb-0" id="profileEmail">john.doe@example.com</p>
                     </div>
                     <nav class="nav flex-column">
-                        <a class="nav-link active" href="#" onclick="showProfileSection('userInfo')">
+                        <a class="nav-link active" href="javascript:void(0);" onclick="showProfileSection(event, 'userInfo'); return false;">
                             <i class="bi-person me-2"></i>
                             User Information
                         </a>
-                        <a class="nav-link" href="#" onclick="showProfileSection('myOrders')">
+                        <a class="nav-link" href="javascript:void(0);" onclick="showProfileSection(event, 'myOrders'); return false;">
                             <i class="bi-bag me-2"></i>
                             My Orders
                         </a>
-                        <a class="nav-link" href="#" onclick="showProfileSection('changePassword')">
+                        <a class="nav-link" href="javascript:void(0);" onclick="showProfileSection(event, 'changePassword'); return false;">
                             <i class="bi-lock me-2"></i>
                             Change Password
                         </a>
                         <hr class="my-2">
-                        <a class="nav-link text-danger" href="#" onclick="logout()">
+                        <a class="nav-link text-danger" href="javascript:void(0);" onclick="UserService.logout(); return false;">
                             <i class="bi-box-arrow-right me-2"></i>
                             Logout
                         </a>
@@ -214,74 +214,10 @@
                             <p class="text-muted">Track and manage your orders</p>
                         </div>
                         
-                        <div class="order-item">
-                            <div class="row align-items-center">
-                                <div class="col-md-2">
-                                    <img src="images/rolex.png" class="img-fluid rounded" alt="Product">
-                                </div>
-                                <div class="col-md-4">
-                                    <h6 class="mb-1">Rolex Submariner</h6>
-                                    <p class="text-muted mb-0">Order #ORD-001</p>
-                                    <small class="text-muted">Ordered on March 15, 2024</small>
-                                </div>
-                                <div class="col-md-2">
-                                    <span class="order-status status-delivered">Delivered</span>
-                                </div>
-                                <div class="col-md-2">
-                                    <h6 class="mb-0">$2,500.00</h6>
-                                </div>
-                                <div class="col-md-2">
-                                    <button class="btn btn-outline-primary btn-sm">View Details</button>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="order-item">
-                            <div class="row align-items-center">
-                                <div class="col-md-2">
-                                    <img src="images/rolex.png" class="img-fluid rounded" alt="Product">
-                                </div>
-                                <div class="col-md-4">
-                                    <h6 class="mb-1">Police Watch Classic</h6>
-                                    <p class="text-muted mb-0">Order #ORD-002</p>
-                                    <small class="text-muted">Ordered on March 20, 2024</small>
-                                </div>
-                                <div class="col-md-2">
-                                    <span class="order-status status-shipped">Shipped</span>
-                                </div>
-                                <div class="col-md-2">
-                                    <h6 class="mb-0">$180.00</h6>
-                                </div>
-                                <div class="col-md-2">
-                                    <button class="btn btn-outline-primary btn-sm">Track Order</button>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="order-item">
-                            <div class="row align-items-center">
-                                <div class="col-md-2">
-                                    <img src="images/rolex.png" class="img-fluid rounded" alt="Product">
-                                </div>
-                                <div class="col-md-4">
-                                    <h6 class="mb-1">Fossil Smartwatch</h6>
-                                    <p class="text-muted mb-0">Order #ORD-003</p>
-                                    <small class="text-muted">Ordered on March 25, 2024</small>
-                                </div>
-                                <div class="col-md-2">
-                                    <span class="order-status status-pending">Processing</span>
-                                </div>
-                                <div class="col-md-2">
-                                    <h6 class="mb-0">$120.00</h6>
-                                </div>
-                                <div class="col-md-2">
-                                    <button class="btn btn-outline-secondary btn-sm">Cancel Order</button>
-                                </div>
-                            </div>
-                        </div>
+                        <div id="ordersContainer"></div>
                         
                         <div class="text-center mt-4">
-                            <button class="btn btn-outline-primary">View All Orders</button>
+                            <button class="btn btn-outline-primary" type="button" onclick="window.location.hash = '#home'">Back to Shop</button>
                         </div>
                     </div>
                     
@@ -328,7 +264,14 @@
 </div>
 
 <script>
-function showProfileSection(sectionId) {
+    ProfileService.init();
+</script>
+<script>
+function showProfileSection(e, sectionId) {
+    if (e && e.preventDefault) {
+        e.preventDefault();
+    }
+
     // Hide all sections
     document.querySelectorAll('.profile-section').forEach(section => {
         section.classList.remove('active');
@@ -343,66 +286,8 @@ function showProfileSection(sectionId) {
     document.getElementById(sectionId).classList.add('active');
     
     // Add active class to clicked nav link
-    event.target.classList.add('active');
-}
-
-// Handle user info form submission
-document.getElementById('userInfoForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    // Here you would typically send the data to your backend
-    console.log('User info update:', {
-        firstName: document.getElementById('firstName').value,
-        lastName: document.getElementById('lastName').value,
-        email: document.getElementById('email').value,
-        phone: document.getElementById('phone').value,
-        address: document.getElementById('address').value,
-        city: document.getElementById('city').value,
-        zipCode: document.getElementById('zipCode').value
-    });
-    
-    // Show success message
-    alert('Profile updated successfully!');
-});
-
-// Handle change password form submission
-document.getElementById('changePasswordForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const currentPassword = document.getElementById('currentPassword').value;
-    const newPassword = document.getElementById('newPassword').value;
-    const confirmNewPassword = document.getElementById('confirmNewPassword').value;
-    
-    // Basic validation
-    if (newPassword !== confirmNewPassword) {
-        alert('New passwords do not match');
-        return;
-    }
-    
-    if (newPassword.length < 8) {
-        alert('Password must be at least 8 characters long');
-        return;
-    }
-    
-    // Here you would typically send the data to your backend
-    console.log('Password change attempt:', {
-        currentPassword,
-        newPassword
-    });
-    
-    // Show success message and clear form
-    alert('Password updated successfully!');
-    this.reset();
-});
-
-// Logout function
-function logout() {
-    if (confirm('Are you sure you want to logout?')) {
-        // Here you would typically clear user session/tokens
-        console.log('User logged out');
-        
-        // Redirect to login page
-        window.location.hash = '#login';
+    if (e && e.currentTarget) {
+        e.currentTarget.classList.add('active');
     }
 }
 </script>

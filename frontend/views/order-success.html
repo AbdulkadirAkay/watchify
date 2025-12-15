@@ -1,39 +1,26 @@
 <style>
-    .success-page {
-        min-height: 100vh;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 2rem 0;
-    }
-    
-    .success-card {
-        background: white;
-        border-radius: 20px;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-        padding: 3rem;
-        text-align: center;
-        max-width: 600px;
-        width: 100%;
-        margin: 0 1rem;
+    .success-header {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        color: white;
+        padding: 3rem 0;
+        margin-bottom: 2rem;
     }
     
     .success-icon {
-        width: 100px;
-        height: 100px;
-        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        width: 80px;
+        height: 80px;
+        background: white;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin: 0 auto 2rem;
+        margin: 0 auto 1rem;
         animation: bounceIn 0.8s ease-out;
     }
     
     .success-icon i {
-        font-size: 3rem;
-        color: white;
+        font-size: 2.5rem;
+        color: #28a745;
     }
     
     @keyframes bounceIn {
@@ -53,12 +40,12 @@
         }
     }
     
-    .order-details {
-        background-color: #f8f9fa;
-        border-radius: 15px;
+    .order-details-card {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         padding: 2rem;
-        margin: 2rem 0;
-        text-align: left;
+        margin-bottom: 2rem;
     }
     
     .detail-row {
@@ -71,198 +58,228 @@
     
     .detail-row:last-child {
         border-bottom: none;
-        font-weight: 600;
-        font-size: 1.1rem;
-        color: #0d6efd;
     }
     
-    .btn-primary-custom {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: none;
-        padding: 1rem 2rem;
-        border-radius: 25px;
-        color: white;
-        font-weight: 600;
-        text-decoration: none;
-        display: inline-block;
-        margin: 0.5rem;
-        transition: transform 0.3s ease;
+    .order-item {
+        border-bottom: 1px solid #e9ecef;
+        padding: 1rem 0;
     }
     
-    .btn-primary-custom:hover {
-        transform: translateY(-2px);
-        color: white;
-        text-decoration: none;
+    .order-item:last-child {
+        border-bottom: none;
     }
     
-    .btn-outline-custom {
-        border: 2px solid #0d6efd;
-        color: #0d6efd;
-        background: transparent;
-        padding: 1rem 2rem;
-        border-radius: 25px;
-        font-weight: 600;
-        text-decoration: none;
-        display: inline-block;
-        margin: 0.5rem;
-        transition: all 0.3s ease;
-    }
-    
-    .btn-outline-custom:hover {
-        background-color: #0d6efd;
-        color: white;
-        text-decoration: none;
-    }
-    
-    .tracking-info {
+    .info-box {
         background-color: #e3f2fd;
         border-left: 4px solid #2196f3;
         padding: 1rem;
-        margin: 1.5rem 0;
+        margin: 1rem 0;
         border-radius: 0 8px 8px 0;
-    }
-    
-    .estimated-delivery {
-        background-color: #f3e5f5;
-        border-left: 4px solid #9c27b0;
-        padding: 1rem;
-        margin: 1.5rem 0;
-        border-radius: 0 8px 8px 0;
-    }
-    
-    .pulse {
-        animation: pulse 2s infinite;
-    }
-    
-    @keyframes pulse {
-        0% {
-            transform: scale(1);
-        }
-        50% {
-            transform: scale(1.05);
-        }
-        100% {
-            transform: scale(1);
-        }
     }
 </style>
 
-<div class="success-page">
-    <div class="success-card">
-        <div class="success-icon pulse">
-            <i class="bi-check-lg"></i>
+<!-- Success Header -->
+<div class="success-header">
+    <div class="container">
+        <div class="text-center">
+            <div class="success-icon">
+                <i class="bi-check-lg"></i>
+            </div>
+            <h1 class="display-4 fw-bold mb-3">Order Successful!</h1>
+            <p class="lead mb-0">Thank you for your purchase! Your order has been confirmed.</p>
         </div>
-        
-        <h1 class="display-4 fw-bold text-primary mb-3">Order Successful!</h1>
-        <p class="lead text-muted mb-4">
-            Thank you for your purchase! Your order has been confirmed and will be processed shortly.
-        </p>
-        
-        <!-- Order Details -->
-        <div class="order-details">
-            <h5 class="mb-3">
-                <i class="bi-receipt me-2"></i>
-                Order Details
-            </h5>
-            
-            <div class="detail-row">
-                <span>Order Number:</span>
-                <strong>#ORD-2024-001</strong>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Order Details Card -->
+            <div class="order-details-card">
+                <h5 class="mb-3">
+                    <i class="bi-receipt me-2"></i>
+                    Order Details
+                </h5>
+                
+                <div class="detail-row">
+                    <span>Order Number:</span>
+                    <strong id="orderNumber">#ORD-XXXX</strong>
+                </div>
+                
+                <div class="detail-row">
+                    <span>Order Date:</span>
+                    <span id="orderDate"></span>
+                </div>
+                
+                <div class="detail-row">
+                    <span>Payment Method:</span>
+                    <span id="paymentMethod">N/A</span>
+                </div>
+                
+                <div class="detail-row">
+                    <span>Shipping Address:</span>
+                    <span id="shippingAddress">N/A</span>
+                </div>
             </div>
             
-            <div class="detail-row">
-                <span>Order Date:</span>
-                <span id="orderDate"></span>
+            <!-- Order Items Card -->
+            <div class="order-details-card">
+                <h5 class="mb-3">
+                    <i class="bi-bag me-2"></i>
+                    Order Items
+                </h5>
+                
+                <div id="orderItems">
+                    <!-- Items will be dynamically inserted here -->
+                </div>
+                
+                <hr>
+                
+                <div class="detail-row">
+                    <span>Subtotal:</span>
+                    <span id="subtotalAmount">$0.00</span>
+                </div>
+                <div class="detail-row">
+                    <span>Shipping:</span>
+                    <span>Free</span>
+                </div>
+                <div class="detail-row">
+                    <strong>Total:</strong>
+                    <strong id="totalAmount">$0.00</strong>
+                </div>
             </div>
             
-            <div class="detail-row">
-                <span>Total Amount:</span>
-                <span>$138.60</span>
+            <!-- Information Box -->
+            <div class="info-box">
+                <h6 class="mb-2">
+                    <i class="bi-info-circle me-2"></i>
+                    What's Next?
+                </h6>
+                <p class="mb-2">
+                    <i class="bi-envelope me-2"></i>
+                    A confirmation email has been sent to your registered email address.
+                </p>
+                <p class="mb-0">
+                    <i class="bi-truck me-2"></i>
+                    Your order is being prepared for shipment. Expected delivery: <strong>3-5 business days</strong>
+                </p>
             </div>
             
-            <div class="detail-row">
-                <span>Payment Method:</span>
-                <span>Credit Card ending in 1234</span>
+            <!-- Action Buttons -->
+            <div class="text-center mt-4">
+                <a href="#profile" class="btn btn-primary me-2">
+                    <i class="bi-person me-2"></i>
+                    View Order History
+                </a>
+                <a href="#home" class="btn btn-outline-secondary">
+                    <i class="bi-house me-2"></i>
+                    Continue Shopping
+                </a>
             </div>
-            
-            <div class="detail-row">
-                <span>Shipping Address:</span>
-                <span>Trg BiH 15, Sarajevo, 71000</span>
-            </div>
-        </div>
-        
-        <!-- Tracking Information -->
-        <div class="tracking-info">
-            <h6 class="mb-2">
-                <i class="bi-truck me-2"></i>
-                Tracking Information
-            </h6>
-            <p class="mb-0">
-                Your order is being prepared for shipment. You'll receive a tracking number via email once it ships.
-            </p>
-        </div>
-        
-        <!-- Estimated Delivery -->
-        <div class="estimated-delivery">
-            <h6 class="mb-2">
-                <i class="bi-calendar-check me-2"></i>
-                Estimated Delivery
-            </h6>
-            <p class="mb-0">
-                <strong>3-5 business days</strong> (Standard Shipping)
-            </p>
-        </div>
-        
-        <!-- Action Buttons -->
-        <div class="mt-4">
-            <a href="#profile" class="btn-primary-custom">
-                <i class="bi-person me-2"></i>
-                View Order History
-            </a>
-            <a href="#home" class="btn-outline-custom">
-                <i class="bi-house me-2"></i>
-                Continue Shopping
-            </a>
-        </div>
-        
-        <!-- Additional Information -->
-        <div class="mt-4 pt-3 border-top">
-            <p class="text-muted mb-2">
-                <i class="bi-envelope me-2"></i>
-                A confirmation email has been sent to your registered email address.
-            </p>
-            <p class="text-muted mb-0">
-                <i class="bi-headset me-2"></i>
-                Need help? <a href="#" class="text-primary">Contact our support team</a>
-            </p>
         </div>
     </div>
 </div>
 
 <script>
-// Set current date
-document.addEventListener('DOMContentLoaded', function() {
-    const now = new Date();
-    const options = { 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-    };
-    document.getElementById('orderDate').textContent = now.toLocaleDateString('en-US', options);
+// Load order details
+function loadOrderDetails() {
+    var orderDetailsJson = localStorage.getItem('last_order');
     
-    // Auto-redirect to home after 30 seconds (optional)
-    // setTimeout(() => {
-    //     window.location.hash = '#home';
-    // }, 30000);
-});
+    if (!orderDetailsJson) {
+        // No order details found, redirect to home
+        console.warn('No order details found');
+        window.location.hash = '#home';
+        return;
+    }
+    
+    try {
+        var orderDetails = JSON.parse(orderDetailsJson);
+        
+        // Display order number
+        $('#orderNumber').text('#ORD-' + (orderDetails.orderId || 'XXXX'));
+        
+        // Display order date
+        var orderDate = new Date(orderDetails.date);
+        var options = { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        };
+        $('#orderDate').text(orderDate.toLocaleDateString('en-US', options));
+        
+        // Display payment method
+        var paymentMethodText = orderDetails.paymentMethod;
+        if (paymentMethodText === 'credit_card') {
+            paymentMethodText = 'Credit Card';
+        } else if (paymentMethodText === 'debit_card') {
+            paymentMethodText = 'Debit Card';
+        } else if (paymentMethodText === 'paypal') {
+            paymentMethodText = 'PayPal';
+        }
+        $('#paymentMethod').text(paymentMethodText);
+        
+        // Display shipping address
+        $('#shippingAddress').text(orderDetails.address || 'N/A');
+        
+        // Display order items
+        var $orderItems = $('#orderItems');
+        $orderItems.empty();
+        
+        if (orderDetails.items && orderDetails.items.length > 0) {
+            orderDetails.items.forEach(function(item) {
+                var img = item.image_url || 'images/no-image-placeholder.png';
+                var price = parseFloat(item.price) || 0;
+                var itemTotal = (price * item.quantity).toFixed(2);
+                
+                var itemHtml = `
+                    <div class="order-item">
+                        <div class="row align-items-center">
+                            <div class="col-2">
+                                <img src="${img}" class="img-fluid rounded" alt="${item.name || ''}">
+                            </div>
+                            <div class="col-6">
+                                <h6 class="mb-1">${item.name || 'Unnamed product'}</h6>
+                                <p class="text-muted mb-0 small">${item.brand || ''}</p>
+                                <small class="text-muted">Qty: ${item.quantity}</small>
+                            </div>
+                            <div class="col-4 text-end">
+                                <p class="mb-0">$${price.toFixed(2)} × ${item.quantity}</p>
+                                <strong>$${itemTotal}</strong>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                $orderItems.append(itemHtml);
+            });
+        }
+        
+        // Display totals
+        $('#subtotalAmount').text('$' + (orderDetails.total || '0.00'));
+        $('#totalAmount').text('$' + (orderDetails.total || '0.00'));
+        
+        // Clear stored order details after displaying (optional - comment out if you want to keep it)
+        // localStorage.removeItem('last_order');
+        
+    } catch (error) {
+        console.error('Error loading order details:', error);
+        if (typeof Utils !== "undefined" && Utils.showError) {
+            Utils.showError('Failed to load order details.');
+        }
+    }
+}
 
-// Add some interactive effects
-document.querySelector('.success-icon').addEventListener('click', function() {
-    this.style.transform = 'scale(1.2)';
-    setTimeout(() => {
-        this.style.transform = 'scale(1)';
-    }, 200);
+// Initialize on page load
+if (window.location.hash.includes("#order-success")) {
+    loadOrderDetails();
+}
+
+// Listen for hash changes
+$(window).on('hashchange', function() {
+    if (window.location.hash.includes("#order-success")) {
+        loadOrderDetails();
+    }
 });
 </script>

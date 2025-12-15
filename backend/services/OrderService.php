@@ -21,6 +21,35 @@ class OrderService extends BaseService {
     }
 
     /**
+     * Override getById to include order products
+     */
+    public function getById($id) {
+        $result = parent::getById($id);
+        
+        if ($result['success'] && isset($result['data']['id'])) {
+            // Fetch order products
+            $products = $this->orderProductDao->getOrderProductsWithDetails($result['data']['id']);
+            
+            // Transform products to match expected format
+            $formattedProducts = [];
+            foreach ($products as $product) {
+                $formattedProducts[] = [
+                    'product_id' => $product['product_id'],
+                    'name' => $product['product_name'],
+                    'brand' => $product['brand'],
+                    'quantity' => $product['quantity'],
+                    'price' => $product['unit_price'],
+                    'image_url' => $product['image_url']
+                ];
+            }
+            
+            $result['data']['products'] = $formattedProducts;
+        }
+        
+        return $result;
+    }
+
+    /**
      * Create a new order with validation
      */
     public function create($data) {
