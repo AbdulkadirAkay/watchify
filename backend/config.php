@@ -1,19 +1,14 @@
 <?php
 class Database {
-   private static $host = 'localhost';
-   private static $dbName = 'watchifydb';
-   private static $username = 'root';
-   private static $password = 'root717';
    private static $connection = null;
-
 
    public static function connect() {
        if (self::$connection === null) {
            try {
                self::$connection = new PDO(
-                   "mysql:host=" . self::$host . ";dbname=" . self::$dbName,
-                   self::$username,
-                   self::$password,
+                   "mysql:host=" . Config::DB_HOST() . ";dbname=" . Config::DB_NAME(),
+                   Config::DB_USER(),
+                   Config::DB_PASSWORD(),
                    [
                        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
@@ -28,6 +23,24 @@ class Database {
 }
 
 class Config {
+
+    public static function DB_NAME() {
+        return Config::get_env("DB_NAME", "watchifydb");
+    }
+    public static function DB_PORT() {
+        return Config::get_env("DB_PORT", 3306);
+    }
+    public static function DB_USER() {
+        return Config::get_env("DB_USER", 'root');
+    }
+    public static function DB_PASSWORD() {
+        return Config::get_env("DB_PASSWORD", 'root717');
+    }
+    public static function DB_HOST() {
+        return Config::get_env("DB_HOST", '127.0.0.1');
+    }
+
+    
     // JWT secret key
     public static function JWT_SECRET() {
         return 'watchify_jwt_secret_key_2024_secure_random_string_change_in_production';
@@ -61,4 +74,7 @@ class Config {
             '/api/categories',
         ];
     }
+    public static function get_env($name, $default){
+        return isset($_ENV[$name]) && trim($_ENV[$name]) != "" ? $_ENV[$name] : $default;
+    } 
 }
