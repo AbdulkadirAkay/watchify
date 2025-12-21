@@ -1,6 +1,23 @@
 # watchify
 Web Programming 
 
+# Production URL:
+https://watchify-frontend-y9ves.ondigitalocean.app
+
+
+
+# Admin User:
+```
+Username: abdulkadirakay717@gmail.com
+Password: 123456
+```
+
+# User:
+```
+Username: johndoe@gmail.com
+Password: john123
+```
+
 ## Database Diagram
 
 ![Watchify Database Diagram](db_diagram.png)
