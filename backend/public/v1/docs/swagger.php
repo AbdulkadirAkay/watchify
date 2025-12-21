@@ -8,7 +8,7 @@ require __DIR__ . '/../../../vendor/autoload.php';
 if($_SERVER['SERVER_NAME'] == 'localhost' || $_SERVER['SERVER_NAME'] == '127.0.0.1'){
     define('BASE_URL', 'http://localhost/watchify/backend');
 } else {
-    define('BASE_URL', 'later'); // TODO: change this to the production URL
+    define('BASE_URL', 'https://'.$_ENV['HOSTNAME']);
 }
 
 $openapi = \OpenApi\Generator::scan([
