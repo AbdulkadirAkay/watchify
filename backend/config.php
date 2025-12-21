@@ -23,6 +23,10 @@ class Database {
 
 class Config {
 
+    public static function HOSTNAME() {
+        return Config::get_env("BACKEND_URL", 'localhost/watchify/backend/');
+    }
+
     public static function DB_NAME() {
         return Config::get_env("DB_NAME", "watchifydb");
     }

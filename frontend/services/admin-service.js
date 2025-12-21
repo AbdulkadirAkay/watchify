@@ -494,7 +494,7 @@ const AdminService = {
             success: (response) => {
                 if (response.success && response.data) {
                     // Save product with the uploaded image path
-                    this.saveProductData(name, brand, category_id, price, quantity, description, response.data.filepath);
+                    this.saveProductData(name, brand, category_id, price, quantity, description, response.data.url);
                 } else {
                     Utils.showError(response.message || "Failed to upload image");
                 }

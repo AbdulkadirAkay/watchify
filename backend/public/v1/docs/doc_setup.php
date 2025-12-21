@@ -18,12 +18,8 @@
 
 /**
  * @OA\Server(
- *      url="http://localhost/watchify/backend",
+ *      url=BASE_URL,
  *      description="Local development server"
- * )
- * @OA\Server(
- *      url="http://localhost/watchify/backend/api",
- *      description="API server"
  * )
  */
 

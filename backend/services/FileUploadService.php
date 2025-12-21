@@ -8,7 +8,7 @@ class FileUploadService {
 
     public function __construct() {
         // Set upload directory (relative to backend folder)
-        $this->uploadDir = __DIR__ . '/../../frontend/uploads/products/';
+        $this->uploadDir = __DIR__ . '/../uploads/products/';
         
         // Create directory if it doesn't exist
         if (!file_exists($this->uploadDir)) {
@@ -76,7 +76,7 @@ class FileUploadService {
                     'data' => [
                         'filename' => $filename,
                         'filepath' => $relativePath,
-                        'url' => $relativePath // Same as filepath for now
+                        'url' => '//'. Config::HOSTNAME() . '/' . $relativePath
                     ]
                 ];
             }
@@ -100,7 +100,7 @@ class FileUploadService {
     public function deleteImage($filepath) {
         try {
             // Security check: ensure filepath is within uploads directory
-            $realPath = realpath(__DIR__ . '/../../frontend/' . $filepath);
+            $realPath = realpath(__DIR__ . '/../uploads/' . $filepath);
             $uploadPath = realpath($this->uploadDir);
 
             if ($realPath === false || strpos($realPath, $uploadPath) !== 0) {
@@ -186,4 +186,5 @@ class FileUploadService {
     }
 }
 ?>
+
 

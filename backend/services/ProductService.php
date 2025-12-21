@@ -27,7 +27,6 @@ class ProductService extends BaseService {
         $validator->required('price', $data['price'] ?? null);
         $validator->required('quantity', $data['quantity'] ?? null);
         $validator->required('category_id', $data['category_id'] ?? null);
-        // image_url is now optional
         $validator->required('description', $data['description'] ?? null);
 
         if (isset($data['name'])) {
@@ -60,7 +59,6 @@ class ProductService extends BaseService {
             }
         }
 
-        // image_url validation removed - accepts file paths, URLs, or any format
 
         if (isset($data['description'])) {
             $validator->maxLength('description', $data['description'], 500);
@@ -119,7 +117,6 @@ class ProductService extends BaseService {
             }
         }
 
-        // image_url validation removed - accepts file paths, URLs, or any format
 
         if (isset($data['description'])) {
             $validator->maxLength('description', $data['description'], 500);
