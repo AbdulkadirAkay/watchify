@@ -139,22 +139,8 @@
         <script src="./utils/rest-client.js"></script>
         <script src="./utils/utils.js"></script>
         <script src="./services/cart-service.js"></script>
-        <script src="./services/home-service.js"></script>
         <script src="./services/product-service.js"></script>
         <script src="./services/user-service.js"></script>
-        <script src="./services/profile-service.js"></script>
-        <script src="./services/admin-service.js"></script>
         <script src="./services/navigation-service.js"></script>
-        <script>
-            // Set current year in footer
-            document.getElementById('currentYear').textContent = new Date().getFullYear();
-            
-            // Initialize navigation on page load
-            $(document).ready(function() {
-                if (typeof NavigationService !== 'undefined' && NavigationService.init) {
-                    NavigationService.init();
-                }
-            });
-        </script>
     </body>
 </html>

@@ -145,6 +145,8 @@ $(window).on('hashchange', function() {
 
 
 $(document).ready(function() {
+    // Set current year in footer
+    document.getElementById('currentYear').textContent = new Date().getFullYear();
     
     const currentHash = window.location.hash;
     if (!currentHash || currentHash === '#') {
@@ -159,6 +161,9 @@ $(document).ready(function() {
     
     if (typeof CartService !== "undefined" && CartService.init) {
         CartService.init();
+    }
+    if (typeof NavigationService !== 'undefined' && NavigationService.init) {
+        NavigationService.init();
     }
 });
 
